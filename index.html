@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>codenamevenom — Bug Bounty Portfolio</title>
+  <meta name="description" content="Portfolio tecnico di report accettati e pagati — codenamevenom" />
+  <style>
+    :root{--bg:#0b0f12;--card:#0f1620;--muted:#98a0aa;--accent:#ef4444;--glass:rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef6;background:linear-gradient(180deg,#05060a 0%,#081019 50%), radial-gradient(1200px 600px at 10% 10%, rgba(14,27,45,0.25), transparent 10%), var(--bg);}
+    .wrap{max-width:1100px;margin:40px auto;padding:28px}
+    header{display:flex;align-items:center;gap:18px}
+    .logo{width:84px;height:84px;border-radius:14px;background:linear-gradient(135deg,#0f1724 0%, #0b1220 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 30px rgba(0,0,0,0.6), inset 0 -6px 20px rgba(255,255,255,0.02)}
+    .logo svg{filter:drop-shadow(0 6px 18px rgba(239,68,68,0.12))}
+    h1{margin:0;font-size:22px;letter-spacing:0.4px}
+    p.lead{color:var(--muted);margin:6px 0 0;font-size:13px}
+
+    /* hero */
+    .hero{display:grid;grid-template-columns:1fr 360px;gap:26px;margin-top:26px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:20px;box-shadow:0 8px 40px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .bio{min-height:200px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .tag{font-size:12px;padding:6px 10px;border-radius:999px;background:var(--glass);color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+
+    /* portfolio grid */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-top:22px}
+    .card .meta{display:flex;justify-content:space-between;align-items:center}
+    .impact{font-weight:700;color:var(--accent)}
+    .card .summary{color:var(--muted);font-size:13px;margin-top:10px}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer}
+    .btn.ghost{background:transparent}
+
+    /* modal */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;z-index:60}
+    .modal.show{display:flex}
+    .modal-inner{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:20px;box-shadow:0 30px 80px rgba(2,6,23,0.8);border:1px solid rgba(255,255,255,0.04);display:grid;grid-template-columns:1fr 360px;gap:16px}
+    .report-meta{color:var(--muted);font-size:13px}
+    .code{background:#020617;padding:12px;border-radius:8px;color:#cfe9ff;font-family:ui-monospace,Menlo,Monaco,monospace;font-size:13px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+
+    /* footer */
+    footer{margin-top:32px;text-align:center;color:var(--muted);font-size:13px;padding:18px}
+
+    /* subtle animations */
+    .pulse{animation:pulse 2.6s infinite}
+    @keyframes pulse{0%{transform:translateY(0)}50%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+
+    /* responsive */
+    @media (max-width:900px){.hero{grid-template-columns:1fr}.modal-inner{grid-template-columns:1fr}.wrap{padding:18px}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <!-- serpent glyph -->
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12C3 7.02944 7.02944 3 12 3V3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C8.68629 21 6 18.3137 6 15" stroke="#EF4444" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h1>codenamevenom — Bug Bounty Portfolio</h1>
+        <p class="lead">Offensive researcher. Report accettati & pagati — evidenze anonime. Designer: dark, tecnico, orientato al recruiter.</p>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:12px;color:var(--muted)">Location</div>
+        <div style="font-weight:700">Europe / Remote</div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="card bio">
+        <h3>Chi sono</h3>
+        <p style="color:var(--muted)">Codenamevenom — bug hunter focalizzato su web app, API e logica business. Precisione tecnica, PoC riproducibili, report strutturati per triage e remediation.</p>
+        <div class="tags">
+          <span class="tag">XSS</span>
+          <span class="tag">SSRF</span>
+          <span class="tag">IDOR</span>
+          <span class="tag">HTTP Smuggling</span>
+          <span class="tag">PoC Python</span>
+        </div>
+
+        <div style="margin-top:16px">
+          <a class="btn" id="btn-contact">Contatta</a>
+          <a class="btn ghost" style="margin-left:8px" id="btn-cv">Scarica CV</a>
+        </div>
+
+        <div style="margin-top:14px;color:var(--muted);font-size:13px">Quick stats: <strong style="color:#cfe9ff">12</strong> reports paid • <strong style="color:#cfe9ff">47</strong> targets triaged</div>
+      </div>
+
+      <aside class="card pulse" style="display:flex;flex-direction:column;gap:12px;justify-content:center;align-items:flex-start">
+        <div style="font-size:13px;color:var(--muted)">Featured bounty</div>
+        <div style="font-weight:800;font-size:18px">IDOR — Public Transport API</div>
+        <div style="color:var(--muted);font-size:13px">Impact: access to other users' contracts</div>
+        <div style="margin-top:6px"><span class="tag">Paid: €300</span></div>
+        <div style="margin-top:12px">
+          <a class="btn" id="view-featured">View details</a>
+        </div>
+      </aside>
+    </section>
+
+    <section style="margin-top:22px">
+      <h3 style="margin:0 0 12px 0">Portfolio – Report accettati</h3>
+      <div class="grid" id="portfolio-grid">
+
+        <!-- CARD 1 -->
+        <div class="card">
+          <div class="meta"><div><strong>DOM XSS (Blob/localStorage)</strong></div><div class="impact">Paid</div></div>
+          <div class="summary">Reflected/localStorage reflection leading to JS execution in subdomain context. PoC hosted as Netlify blob.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <a class="btn" data-id="r1" onclick="openReport('r1')">Apri</a>
+            <a class="btn ghost" href="#" onclick="downloadSample('r1')">PDF</a>
+            <div style="margin-left:auto;color:var(--muted);font-size:12px">Reward: €200</div>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card">
+          <div class="meta"><div><strong>IDOR — /contracts/{id}</strong></div><div class="impact">Paid</div></div>
+          <div class="summary">Enumeration + access to other users' contracts via predictable IDs. Proof-of-concept python script included.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <a class="btn" data-id="r2" onclick="openReport('r2')">Apri</a>
+            <a class="btn ghost" href="#" onclick="downloadSample('r2')">PDF</a>
+            <div style="margin-left:auto;color:var(--muted);font-size:12px">Reward: €300</div>
+          </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card">
+          <div class="meta"><div><strong>SSRF — tracker endpoint</strong></div><div class="impact">Paid</div></div>
+          <div class="summary">Outbound HTTP/DNS callbacks observed via interactsh. Server processed attacker URL in query parameter.</div>
+          <div style="margin-top:12px;display:flex;gap:8px;align-items:center">
+            <a class="btn" data-id="r3" onclick="openReport('r3')">Apri</a>
+            <a class="btn ghost" href="#" onclick="downloadSample('r3')">PDF</a>
+            <div style="margin-left:auto;color:var(--muted);font-size:12px">Reward: info-only</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- modal to show report -->
+    <div class="modal" id="modal">
+      <div class="modal-inner">
+        <div>
+          <h3 id="r-title">Report title</h3>
+          <div class="report-meta" id="r-meta">Scope • Impact • Status</div>
+          <p style="margin-top:10px;color:var(--muted)" id="r-desc">Detailed summary...</p>
+
+          <h4 style="margin-top:12px">PoC (estratto)</h4>
+          <pre class="code" id="r-poc">curl -i 'https://example/target?param=PAYLOAD'</pre>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <a class="btn" id="download-pdf">Download anonymized PDF</a>
+            <a class="btn ghost" id="close-modal">Chiudi</a>
+          </div>
+        </div>
+
+        <aside style="padding-left:8px">
+          <div style="font-size:13px;color:var(--muted)">Evidence</div>
+          <div style="margin-top:8px">
+            <div class="card" style="padding:10px;margin-bottom:8px">Screenshot (masked)</div>
+            <div class="card" style="padding:10px;margin-bottom:8px">PoC script (Python)</div>
+            <div class="card" style="padding:10px;margin-bottom:8px">Bounty proof (redacted)</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <footer>
+      <div>Made with precision — codenamevenom</div>
+      <div style="margin-top:6px;color:var(--muted)">Deploy: push this file to <code>codenamevenom.github.io/index.html</code> and enable GitHub Pages (branch: main)</div>
+    </footer>
+  </div>
+
+  <script>
+    // Simple single-file site logic. Replace dataset below with real anonymized report data.
+    const REPORTS = {
+      r1:{title:'DOM XSS — subdomain blob', meta:'Asset: hilton.com • Impact: JS execution • Status: Paid', desc:'Reflection of attacker-controlled data via blob URL and localStorage leading to DOM execution in subdomain. PoC and screenshots available (redacted).', poc:`// PoC snippet (masked)\n<script>localStorage.setItem('x','\\u003cimg src=1 onerror=alert(1)\\u003e')</script>`},
+      r2:{title:'IDOR — /contracts/{id}', meta:'Asset: Public Transport API • Impact: Unauthorized contract access • Status: Paid €300', desc:'Predictable numerical IDs allowed enumeration and access to other users contracts. We validated with python script that iterates IDs and extracts contract PDF.', poc:`# excerpt python\nimport requests\nfor i in range(1000,1010):\n    r=requests.get(f'https://TARGET/contracts/{i}')\n    if r.status_code==200:\n        print(i)`},
+      r3:{title:'SSRF — tracker endpoint', meta:'Asset: analytics/tracker • Impact: outbound HTTP/DNS callbacks • Status: Accepted', desc:'Tracker parameter forwarded to internal fetch causing outbound callbacks observed on OOB collector. See interactsh evidence (redacted).', poc:`curl 'https://victim/heatmap?file=https://attacker.oast/probe'`}
+    }
+
+    function openReport(id){
+      const r=REPORTS[id];
+      document.getElementById('r-title').innerText=r.title;
+      document.getElementById('r-meta').innerText=r.meta;
+      document.getElementById('r-desc').innerText=r.desc;
+      document.getElementById('r-poc').innerText=r.poc;
+      document.getElementById('modal').classList.add('show');
+    }
+    document.getElementById('close-modal').addEventListener('click',()=>document.getElementById('modal').classList.remove('show'));
+    document.getElementById('view-featured').addEventListener('click',()=>openReport('r2'));
+    document.getElementById('btn-contact').addEventListener('click',()=>location.href='mailto:codenamevenom@example.com');
+    document.getElementById('btn-cv').addEventListener('click',()=>alert('Scarica CV - placeholder'));
+    function downloadSample(id){alert('Download PDF anonymized (placeholder). Replace with your real files in repo.)')}
+
+    // small keyboard shortcut: press D to toggle debug overlay (for demo)
+    window.addEventListener('keydown',e=>{if(e.key==='d'){document.body.style.outline = document.body.style.outline? '': '4px dashed rgba(239,68,68,0.08)'}})
+  </script>
+</body>
+</html>
