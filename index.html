@@ -30,16 +30,12 @@
 
     /* main content */
     #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-top:20px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;margin-top:20px}
     .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 0 16px rgba(239,68,68,0.08);border:1px solid rgba(255,255,255,0.04);transition:transform 0.28s ease, box-shadow 0.28s ease}
     .card:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(239,68,68,0.14)}
-    .impact{font-weight:700;color:var(--accent)}
+    .impact{font-weight:700;color:var(--accent);margin-top:6px}
     .summary{color:var(--muted);font-size:13px;margin-top:10px}
-    .btn{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer;color:#fff}
-
-    section{margin-top:40px}
-    section h2{margin-bottom:8px}
-    pre.code{background:#020617;padding:12px;border-radius:8px;color:#cfe9ff;font-family:ui-monospace,Menlo,Monaco,monospace;font-size:13px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
+    .btn{display:inline-block;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);cursor:pointer;color:#fff;margin-top:10px}
 
     footer{text-align:center;color:var(--muted);font-size:12px;padding:20px;margin-top:40px}
     footer:hover{color:var(--accent)}
@@ -50,7 +46,7 @@
 </head>
 <body>
   <aside id="sidebar">
-    <img src="assets/img/avatar.png" alt="avatar">
+    <img src="https://i.imgur.com/8Km9tLL.png" alt="avatar"> <!-- avatar professionale placeholder -->
     <h2>codenamevenom</h2>
     <p>Cybersecurity Engineer · Offensive Researcher · AppSec</p>
     <ul>
@@ -64,64 +60,56 @@
 
   <main id="content">
     <header data-aos="fade-down">
-      <h1>Security Portfolio — Accepted & Paid Reports</h1>
-      <p style="color:var(--muted)">Selection of anonymized reports demonstrating offensive security findings and impact.</p>
+      <h1>Security Portfolio</h1>
+      <p style="color:var(--muted)">Accepted & Paid Reports — selection of anonymized offensive security findings.</p>
     </header>
 
     <section id="reports">
       <div class="grid">
         <div class="card" data-aos="fade-up">
-          <h3>SSRF — /api/og/statistic (GET image)</h3>
+          <h3>SSRF — /api/og/statistic</h3>
           <div class="impact">Paid</div>
-          <p class="summary">GET parameter "image" allowed internal network discovery via SSRF.</p>
-          <a class="btn" href="#r1">Read more</a>
+          <p class="summary">GET parameter "image" allowed internal network discovery.</p>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>IDOR — /api/Log?actionTag=parrainage-btn-envoyer</h3>
+          <h3>IDOR — /api/Log</h3>
           <div class="impact">Paid</div>
           <p class="summary">POST parameter <code>idAdhesion</code> exposed unauthorized resources.</p>
-          <a class="btn" href="#r2">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>Business Logic — Weak Email Validation</h3>
+          <h3>Business Logic — Email Validation</h3>
           <div class="impact">Paid</div>
           <p class="summary">Weak validation + no anti-automation led to abuse of workflows.</p>
-          <a class="btn" href="#r3">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>Improper Access Control — /api/auth/local/register</h3>
+          <h3>Access Control — /api/auth/register</h3>
           <div class="impact">Paid</div>
           <p class="summary">POST allowed unauthorized user registration under certain conditions.</p>
-          <a class="btn" href="#r4">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>DOM XSS — /user/auth/chooseschema (tabId)</h3>
+          <h3>DOM XSS — /user/auth/schema</h3>
           <div class="impact">Paid</div>
           <p class="summary">Reflected tabId parameter led to DOM XSS in UI flow.</p>
-          <a class="btn" href="#r5">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>IDOR — /api/quotes/[UUID]/</h3>
+          <h3>IDOR — /api/quotes/[UUID]</h3>
           <div class="impact">Paid</div>
           <p class="summary">Predictable UUID allowed PII exposure of other users.</p>
-          <a class="btn" href="#r6">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
         <div class="card" data-aos="fade-up">
-          <h3>IDOR — /v2/apps/[ID]/users/{user_id}/verification-methods</h3>
+          <h3>IDOR — /v2/apps/users</h3>
           <div class="impact">Paid</div>
           <p class="summary">Endpoint leaked verification methods of other users.</p>
-          <a class="btn" href="#r7">Read more</a>
+          <a class="btn" href="#">Read more</a>
         </div>
       </div>
     </section>
-
-    <section id="r1"><h2>Report 1 — SSRF via /api/og/statistic</h2><pre class="code">GET /api/og/statistic?image=https://attacker/probe</pre></section>
-    <section id="r2"><h2>Report 2 — IDOR via /api/Log</h2><pre class="code">POST /api/Log?actionTag=parrainage-btn-envoyer {"idAdhesion":"123"}</pre></section>
-    <section id="r3"><h2>Report 3 — Weak Email Validation</h2><p>Email validation was bypassable and anti-automation controls were missing.</p></section>
-    <section id="r4"><h2>Report 4 — Improper Access Control</h2><pre class="code">POST /api/auth/local/register {"email":"attacker@example.com","password":"pass"}</pre></section>
-    <section id="r5"><h2>Report 5 — DOM XSS</h2><pre class="code">GET /user/auth/chooseschema?tabId=<script>alert(1)</script></pre></section>
-    <section id="r6"><h2>Report 6 — IDOR /api/quotes/[UUID]/</h2><pre class="code">GET /api/quotes/UUID</pre></section>
-    <section id="r7"><h2>Report 7 — IDOR Verification Methods</h2><pre class="code">GET /v2/apps/1/users/2/verification-methods</pre></section>
 
     <footer>
       <div>© 2025 codenamevenom — All rights reserved</div>
