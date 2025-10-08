@@ -216,23 +216,23 @@
   .menu-toggle .hamburger::before { top: -6px; }
   .menu-toggle .hamburger::after { top: 6px; }
 
-  /* Menu mobile nascosto di default */
-  #sidebar ul {
-    display: none;
-    position: absolute;
-    top: 60px;
-    left: 10px;
-    right: 10px;
-    background: var(--card);
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-  }
+  /* Menu mobile */
+#sidebar ul {
+  display: none;
+  position: absolute;
+  top: 100%;          /* subito sotto la barra */
+  left: 0;
+  right: 0;
+  background: var(--card);
+  padding: 12px;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
 
-  /* Quando sidebar ha classe .open, mostra menu */
-  #sidebar.open ul { 
-    display: block; 
-  }
+#sidebar.open ul {
+  display: block;
+}
+
 
   /* Link nel menu mobile */
   #sidebar ul li a {
@@ -1255,8 +1255,14 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
   // use a simple styled hamburger (CSS should style .hamburger)
   btn.innerHTML = '<span class="hamburger" aria-hidden="true"></span>';
 
-  // Insert button at the top of sidebar (before first child)
+  // Inserisci dopo avatar-wrapper, non come primo figlio
+const avatar = sidebar.querySelector('.avatar-wrapper');
+if (avatar) {
+  sidebar.insertBefore(btn, avatar.nextSibling);
+} else {
   sidebar.insertBefore(btn, sidebar.firstChild);
+}
+
 
   // Utility: find sidebar list
   const sidebarList = sidebar.querySelector('ul');
