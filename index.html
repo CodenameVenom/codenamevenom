@@ -286,12 +286,11 @@
     return;
   }
 
-  // Rimuovi eventuali tag <script> per sicurezza
-  const stripped = htmlContent.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
+  // Rimuovi eventuali tag <script> per sicurezza (basic)
+  const stripped = String(htmlContent).replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
 
   // Inietta HTML sanitizzato (basic). Se vuoi maggiore sicurezza, integra DOMPurify.
-  safeInjectReport('report-body', reportHtml);
-
+  container.innerHTML = stripped;
 
   // Refresh AOS (se usi AOS)
   if (window.AOS && typeof AOS.refresh === 'function') {
@@ -305,6 +304,7 @@
     }
   });
 }
+
 
 
     function openReport(id){
@@ -324,22 +324,21 @@
     idor3: "IDOR — /v2/apps/[ID]/verification-methods"
   };
 
-  // riferimenti fissi (ora sicuri perché abbiamo i due ID nel DOM)
+  // riferimenti fissi
   const titleEl = document.getElementById('report-title');
   const bodyEl  = document.getElementById('report-body');
 
-  // Aggiorna titolo
   if(titleEl) titleEl.textContent = titleMap[id] || "Report";
 
-  // Se SSRF: mantieni il contenuto statico (se hai già messo l'SSRF HTML dentro #report-body)
+  // SSRF: se il tuo HTML SSRF è già statico dentro #report-body, lascialo così
   if(id === 'ssrf'){
-    // niente da fare: lascia il markup statico nella sezione SSRF
-    // (se vuoi sovrascriverlo comunque, fallo qui)
+    // non sovrascrivere (se vuoi, qui puoi forzare l'overwrite)
   }
-  // IDOR: iniettiamo il post completo (ma SENZA <h2> o footer)
+
+  // IDOR: iniettiamo il post completo (body only)
   else if (id === 'idor1') {
     if (!bodyEl) return false;
-    bodyEl.innerHTML = `
+    const reportHtml = `
 <div id="post-wrapper">
   <h1>IDOR Exploitation: Breaking Access Control in Action Logging</h1>
   <div class="post-meta text-muted">
@@ -442,8 +441,9 @@ if r.status_code == 200 and "true" in r.text.lower():
   </div>
 </div>
     `;
+  
+     safeInjectReport('report-body', reportHtml);
   }
-}
   // --- template placeholder per altri report ---
     else if (id === 'logic') {
     if (!bodyEl) return false;
@@ -566,13 +566,12 @@ for p in payloads:
 
   <footer>Report prepared by a security researcher — responsible disclosure applied. © 2025</footer>
 </div>
-<!-- END REPORT HTML -->
-`;
-
-  const safe = reportHtml.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
-    bodyEl.innerHTML = safe;
+<!-- END REPORT HTML -->`;
+       safeInjectReport('report-body', reportHtml);
   }
-  // fallback: placeholder per gli altri report
+
+
+  // fallback per gli altri report (placeholder)
   else {
     if (!bodyEl) return false;
     bodyEl.innerHTML = `
@@ -583,7 +582,7 @@ for p in payloads:
     `;
   }
 
-  // scroll top for visibility
+  // scroll top per visibilità
   window.scrollTo({ top: 0, behavior: 'smooth' });
   return false;
 }
