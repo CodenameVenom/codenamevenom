@@ -26,8 +26,9 @@
     #sidebar ul li{margin:10px 0}
     #sidebar ul li a{color:#e6eef6;text-decoration:none;display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;transition:background 0.3s}
     #sidebar ul li a:hover{background:rgba(239,68,68,0.1);color:var(--accent)}
-    #toggleMode{margin-top:auto;margin-bottom:20px;cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);transition:background 0.3s}
-    #toggleMode:hover{background:rgba(239,68,68,0.15)}
+    .sidebar-bottom{margin-top:auto;display:flex;gap:10px;align-items:center;justify-content:center}
+    .circle-btn{cursor:pointer;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);transition:background 0.3s}
+    .circle-btn:hover{background:rgba(239,68,68,0.15)}
 
     /* main content */
     #content{margin-left:260px;flex:1;padding:30px;display:flex;flex-direction:column}
@@ -40,6 +41,12 @@
 
     footer{text-align:center;color:var(--muted);font-size:12px;padding:20px;margin-top:auto}
     footer:hover{color:var(--accent)}
+
+    /* about section */
+    #aboutme{text-align:center;margin-top:60px}
+    #aboutme h1{font-size:28px;margin-bottom:10px}
+    #aboutme p.particle{color:var(--accent);font-weight:600;font-size:16px;letter-spacing:1px;position:relative;display:inline-block;}
+    #aboutme .details{margin-top:20px;text-align:left;max-width:600px;margin-left:auto;margin-right:auto;color:var(--text);line-height:1.6}
 
     /* light mode */
     html[mode="light"]{--bg:var(--light-bg);--card:var(--light-card);--text:var(--light-text);--muted:#444}
@@ -57,10 +64,13 @@
     <ul>
       <li><a href="#"><i class="fa fa-home"></i> Home</a></li>
       <li><a href="#reports"><i class="fa fa-list"></i> Reports</a></li>
-      <li><a href="#about"><i class="fa fa-user"></i> About</a></li>
+      <li><a href="#aboutme"><i class="fa fa-user"></i> About Me</a></li>
       <li><a href="#contact"><i class="fa fa-envelope"></i> Contact</a></li>
     </ul>
-    <div id="toggleMode"><i id="modeIcon" class="fa fa-moon"></i></div>
+    <div class="sidebar-bottom">
+      <div id="toggleMode" class="circle-btn"><i id="modeIcon" class="fa fa-moon"></i></div>
+      <a href="mailto:voxlab.services@gmail.com" class="circle-btn"><i class="fa fa-envelope"></i></a>
+    </div>
   </aside>
 
   <main id="content">
@@ -116,6 +126,19 @@
       </div>
     </section>
 
+    <section id="aboutme">
+      <h1>About Me</h1>
+      <p class="particle">In cyberspace, every detail hides a story — I uncover the unseen.</p>
+      <div class="details">
+        <h3>Who am I?</h3>
+        <ul>
+          <li>Security Researcher · Application Security · Red Team</li>
+          <li>Currently studying towards OSCP · Holder of eJPT</li>
+          <li>STEM Graduate</li>
+        </ul>
+      </div>
+    </section>
+
     <footer>
       <div>© 2025 codenamevenom — All rights reserved</div>
       <div>Portfolio for Application Security, Red Team, Security Engineering</div>
@@ -153,6 +176,28 @@
         else { setMode('light'); }
       });
     })();
+
+    // Particle text effect
+    const particleText = document.querySelector('.particle');
+    if(particleText){
+      const text = particleText.textContent;
+      particleText.textContent = '';
+      [...text].forEach((char,i)=>{
+        const span = document.createElement('span');
+        span.textContent = char;
+        span.style.display = 'inline-block';
+        span.style.opacity = 0;
+        span.style.transform = 'translateY(20px)';
+        span.style.transition = `all 0.6s ease ${i*0.04}s`;
+        particleText.appendChild(span);
+      });
+      setTimeout(()=>{
+        particleText.querySelectorAll('span').forEach(s=>{
+          s.style.opacity=1;
+          s.style.transform='translateY(0)';
+        });
+      },200);
+    }
   </script>
 </body>
 </html>
