@@ -32,57 +32,61 @@
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    /* ---------- AVATAR: robust, svg-friendly, accessible ---------- */
+    /* ---------- AVATAR: robust, svg-friendly, accessible + mobile ---------- */
 
 .avatar-wrapper {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 140px;               /* slightly larger by default */
+  height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   user-select: none;
   outline: none;
 }
 
-/* decorative ring */
+/* decorative ring (kept but can be hidden by setting display:none) */
 .avatar-circle {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.35), transparent 70%);
+  background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.28), transparent 72%);
   border: 3px solid var(--accent);
-  box-shadow: 0 0 12px rgba(239,68,68,0.4);
-  transition: transform 1.2s cubic-bezier(.2,.9,.2,1), box-shadow .6s ease;
+  box-shadow: 0 0 12px rgba(239,68,68,0.38);
+  transition: transform 1.0s cubic-bezier(.2,.9,.2,1), box-shadow .45s ease;
   transform-origin: 50% 50%;
   pointer-events: none;
   will-change: transform, box-shadow;
 }
 
-/* symbol container (holds SVG, IMG or text) */
+/* symbol container (holds SVG or IMG) */
 .avatar-symbol {
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
+  width: 112px;
+  height: 112px;
   color: var(--text);
-  transition: transform .9s cubic-bezier(.18,.9,.25,1), color .35s ease;
+  transition: transform .6s cubic-bezier(.18,.9,.25,1), color .35s ease;
   transform-origin: 50% 50%;
   will-change: transform;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.04), transparent 72%);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
 }
 
-/* class that triggers the single initial pulse (added/removed by JS) */
+/* JS-driven single initial pulse (class added then removed by script) */
 .avatar-symbol.pulse-start {
   animation: avatar-pulse 1150ms cubic-bezier(.2,.9,.2,1) 1 both;
 }
 
-/* svg inside symbol */
+/* svg inside symbol: scale-to-fit; uses currentColor for stroke/fill if paths are set */
 .avatar-symbol svg {
-  width: 72px;
-  height: 72px;
+  width: 100%;
+  height: 100%;
   display: block;
   fill: none;
   stroke: currentColor;
@@ -91,42 +95,41 @@
 
 /* fallback for img inside symbol */
 .avatar-symbol img {
-  width: 72px;
-  height: 72px;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 50%;
   display: block;
 }
 
-/* Hover / focus: ring rotate + symbol spin */
+/* Hover / focus: subtle ring rotation + symbol scale/rotate */
 .avatar-wrapper:hover .avatar-circle,
 .avatar-wrapper:focus-within .avatar-circle {
-  transform: rotate(180deg) scale(1.04);
+  transform: rotate(180deg) scale(1.03);
   box-shadow: 0 0 26px rgba(239,68,68,0.85);
 }
 
 .avatar-wrapper:hover .avatar-symbol,
 .avatar-wrapper:focus-within .avatar-symbol {
-  transform: rotate(360deg) scale(1.12);
+  transform: rotate(8deg) scale(1.08);
   color: var(--accent);
   animation-play-state: paused;
 }
 
-/* keyboard accessibility */
+/* keyboard accessibility focus */
 .avatar-wrapper:focus-visible {
-  box-shadow: 0 0 0 4px rgba(239,68,68,0.08);
+  box-shadow: 0 0 0 6px rgba(239,68,68,0.06);
   border-radius: 16px;
 }
 
-/* initial pulse keyframes */
+/* initial pulse keyframes (gentle) */
 @keyframes avatar-pulse {
-  0%   { transform: scale(0.90); opacity: 0.72; }
-  35%  { transform: scale(1.18); opacity: 1; }
-  70%  { transform: scale(0.98); opacity: 1; }
+  0%   { transform: scale(0.92); opacity: 0.78; }
+  45%  { transform: scale(1.18); opacity: 1; }
+  85%  { transform: scale(0.99); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Respect reduced motion */
+/* Respect reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   .avatar-circle,
   .avatar-symbol {
@@ -135,8 +138,73 @@
     transform: none !important;
   }
   .avatar-wrapper:hover .avatar-circle,
-  .avatar-wrapper:hover .avatar-symbol { transform: none !important; box-shadow: 0 0 12px rgba(239,68,68,0.4) !important; }
+  .avatar-wrapper:hover .avatar-symbol {
+    transform: none !important;
+    box-shadow: 0 0 12px rgba(239,68,68,0.4) !important;
+  }
 }
+
+/* ---------- RESPONSIVE LAYOUT: mobile friendly ---------- */
+/* breakpoint: small devices */
+@media (max-width: 880px) {
+  /* Make sidebar horizontal/topbar */
+  #sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    box-shadow: none;
+  }
+
+  /* keep avatar but reduce size */
+  .avatar-wrapper {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0;
+  }
+  .avatar-symbol {
+    width: 48px;
+    height: 48px;
+  }
+  .avatar-symbol img,
+  .avatar-symbol svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* hide large title / subtitle to save space (optional) */
+  #sidebar h2 { display: none; }
+  #sidebar p  { display: none; }
+
+  /* mobile menu: links hidden by default, shown when sidebar has .open */
+  #sidebar ul {
+    display: none;
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 64px;
+    background: var(--card);
+    padding: 12px;
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    z-index: 20;
+  }
+  #sidebar.open ul { display: block; }
+
+  /* content uses full width */
+  #content { margin-left: 0; padding: 18px; max-width: 100%; }
+
+  /* tighten spacing for cards */
+  .stack { gap: 18px; margin-top: 14px; padding: 0 8px; }
+  .card  { max-width: 100%; padding: 14px; }
+
+  /* ensure footer has proper spacing on mobile */
+  footer { padding: 14px 8px; }
+}
+
 
 
 
@@ -334,15 +402,17 @@ body.light .folder{ background:var(--light-card); }
 <body>
   <aside id="sidebar">
     <!-- START: avatar (replace the old avatar-wrapper block) -->
+<!-- avatar: single emblem (use img or inline svg). Put this in the sidebar -->
 <div class="avatar-wrapper" title="codenamevenom" tabindex="0" aria-label="CodenameVenom avatar">
   <div class="avatar-circle" aria-hidden="true"></div>
   <div class="avatar-symbol" aria-hidden="false">
-    <!-- path: use 'avatar-venom.svg' (file at repo root). 
-         If you instead placed it in assets/, change src to "assets/avatar-venom.svg" -->
-    <img src="avatar-venom.svg" alt="CodenameVenom emblem">
-    <!-- OR paste inline SVG here instead of <img> if you want per-path control -->
+    <!-- If your file is at repo root -->
+    <img src="avatar-venom.svg" alt="CodenameVenom emblem" />
+    <!-- If placed in assets/ use src="assets/avatar-venom.svg" -->
+    <!-- Optionally: paste inline SVG here for per-path animation control -->
   </div>
 </div>
+
 <!-- END: avatar -->
 
     <h2>CODENAMEVENOM</h2>
@@ -1124,6 +1194,29 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
     window.replayAvatarPulse = startPulse;
   })();
 </script>
+<script>
+  // Mobile menu toggle (small simple behavior)
+  (function(){
+    // create toggle button dynamically (so markup doesn't clutter desktop)
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    const btn = document.createElement('button');
+    btn.id = 'menu-toggle';
+    btn.type = 'button';
+    btn.setAttribute('aria-expanded','false');
+    btn.setAttribute('aria-label','Toggle menu');
+    btn.style.cssText = 'background:transparent;border:0;color:inherit;font-size:22px;cursor:pointer;padding:6px;margin-left:6px';
+    btn.innerHTML = '&#9776;'; // hamburger
+    // insert at start of sidebar
+    sidebar.insertBefore(btn, sidebar.firstChild);
+
+    btn.addEventListener('click', function(){
+      const open = sidebar.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  })();
+</script>
+
 
 </body>
 </html>
