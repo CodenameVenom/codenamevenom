@@ -3,182 +3,434 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="index, follow">
   <title>codenamevenom — Security Portfolio</title>
   <meta name="description" content="Technical portfolio of accepted and paid security reports — codenamevenom" />
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
   <style>
     :root{
       --bg:#0b0f12;--card:#0f1620;--muted:#98a0aa;--accent:#ef4444;--glass:rgba(255,255,255,0.03);
-      --text:#e6eef6;--light-bg:#f5f5f5;--light-card:#ffffff;--light-text:#222;--light-muted:#666
+      --text:#e6eef6;--light-bg:#f5f5f5;--light-card:#ffffff;--light-text:#222;--light-muted:#666;
+      --sidebar-w:260px;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex;transition:background .3s,color .3s;min-height:100vh;flex-direction:row}
+    html,body{height:100%}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex;transition:background .25s,color .25s;min-height:100vh}
     body.light{background:var(--light-bg);color:var(--light-text)}
 
-    /* sidebar */
-    #sidebar{width:260px;min-height:100vh;background:#0f1620;display:flex;flex-direction:column;align-items:center;padding:30px 20px;box-shadow:4px 0 20px rgba(0,0,0,0.6);position:fixed;left:0;top:0;bottom:0;transition:background .3s}
+    /* SIDEBAR */
+    #sidebar{width:var(--sidebar-w);min-height:100vh;background:#0f1620;display:flex;flex-direction:column;align-items:center;padding:28px 18px;box-shadow:4px 0 20px rgba(0,0,0,0.6);position:fixed;left:0;top:0;bottom:0;transition:transform .28s ease, background .25s}
     body.light #sidebar{background:#fff}
-    #sidebar h2{margin-top:16px;font-size:20px;letter-spacing:1px;text-transform:uppercase;transition:color .3s, text-shadow .3s}
-    #sidebar h2:hover{color:var(--accent);text-shadow:0 0 8px var(--accent)}
-    #sidebar p{color:var(--muted);font-size:13px;margin-top:4px;text-align:center}
-    #sidebar ul{list-style:none;margin-top:30px;width:100%}
-    #sidebar ul li{margin:10px 0}
-    #sidebar ul li a{color:inherit;text-decoration:none;display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;transition:background 0.3s}
-    #sidebar ul li a:hover{background:rgba(239,68,68,0.1);color:var(--accent)}
+    #sidebar h2{margin-top:8px;font-size:18px;letter-spacing:1px;text-transform:uppercase}
+    #sidebar p{color:var(--muted);font-size:13px;margin-top:6px;text-align:center}
+    #sidebar ul{list-style:none;margin-top:24px;width:100%}
+    #sidebar ul li{margin:8px 0}
+    #sidebar ul li a{color:inherit;text-decoration:none;display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;transition:background 0.2s, color 0.2s}
+    #sidebar ul li a:hover{background:rgba(239,68,68,0.08);color:var(--accent)}
 
-    .sidebar-bottom{margin-top:auto;display:flex;gap:12px;align-items:center}
-    .circle-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1c2530;color:#aaa;cursor:pointer;transition:all .25s;font-size:18px}
+    .sidebar-bottom{margin-top:auto;display:flex;gap:10px;align-items:center}
+    .circle-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#1c2530;color:#aaa;cursor:pointer;transition:all .22s;font-size:16px}
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    /* avatar wow effect */
-    .avatar-wrapper{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-    .avatar-circle{position:absolute;width:100%;height:100%;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 20px rgba(239,68,68,0.6);animation:spin 8s linear infinite;}
-    .avatar-symbol{font-size:40px;z-index:2;color:var(--text);transition:transform .4s ease,color .4s}
-    .avatar-wrapper:hover .avatar-symbol{transform:scale(1.5) rotate(20deg);color:var(--accent)}
-    .avatar-wrapper:hover .avatar-circle{animation:spin-fast 2s linear infinite, pulse 1.5s ease-in-out infinite}
+    /* MOBILE: hamburger */
+    #hamburger{display:none;position:fixed;left:14px;top:14px;z-index:60;width:44px;height:44px;border-radius:10px;background:rgba(15,22,32,0.9);display:flex;align-items:center;justify-content:center;color:#fff;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,0.5)}
+    @media (max-width:900px){
+      #sidebar{transform:translateX(-110%);position:fixed;z-index:70}
+      #sidebar.open{transform:translateX(0)}
+      #hamburger{display:flex}
+      #content{margin-left:0;padding:18px}
+    }
+
+    /* AVATAR (SVG) */
+    .avatar-wrapper{position:relative;width:94px;height:94px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .avatar-bg {
+      position:absolute;inset:0;border-radius:50%;
+      background:linear-gradient(135deg, rgba(239,68,68,0.12), rgba(239,68,68,0.02));
+      border:2px solid rgba(239,68,68,0.18);backdrop-filter: blur(4px);
+      box-shadow:0 8px 30px rgba(239,68,68,0.06);
+      transition:transform .6s ease, box-shadow .6s ease;
+      animation:spin 12s linear infinite;
+    }
+    .avatar-fill {
+      width:72px;height:72px;border-radius:50%;background:linear-gradient(180deg,#ef4444,#ff7a7a);display:grid;place-items:center;color:#0b0f12;font-weight:700;font-size:22px;
+      transform:scale(0.98);
+      transition:transform .28s ease;
+      clip-path:circle(50% at 50% 50%);
+    }
+    .avatar-icon{font-size:28px;color:rgba(11,15,18,0.95);transform:rotate(0deg);transition:transform .4s ease}
+    .avatar-wrapper:hover .avatar-bg{animation:spin-fast 2s linear infinite;transform:scale(1.02);box-shadow:0 24px 60px rgba(239,68,68,0.16)}
+    .avatar-wrapper:hover .avatar-fill{transform:scale(1.08)}
+    .avatar-wrapper:hover .avatar-icon{transform:rotate(10deg) scale(1.08)}
 
     @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
     @keyframes spin-fast{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-    @keyframes pulse{0%{box-shadow:0 0 10px rgba(239,68,68,0.5)}50%{box-shadow:0 0 25px rgba(239,68,68,0.9)}100%{box-shadow:0 0 10px rgba(239,68,68,0.5)}}
 
-    /* content */
-    #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh}
-    section{display:none;animation:fade .5s ease;flex:1}
+    /* CONTENT */
+    #content{margin-left:var(--sidebar-w);flex:1;padding:30px;max-width:calc(100% - var(--sidebar-w));display:flex;flex-direction:column;min-height:100vh;transition:margin-left .28s}
+    section{display:none;animation:fade .45s ease;flex:1}
     section.active{display:block}
     @keyframes fade{from{opacity:0}to{opacity:1}}
 
-    /* home cards stacked + centered */
-    .stack{display:flex;flex-direction:column;align-items:center;gap:60px;margin-top:40px}
-    .card{width:70%;background:var(--card);border-radius:14px;padding:20px;box-shadow:0 0 16px rgba(239,68,68,0.08);border:1px solid rgba(255,255,255,0.04);transition:transform 0.28s ease, box-shadow 0.28s ease}
-    .card:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(239,68,68,0.14)}
+    /* STACKED CARDS */
+    .stack{display:flex;flex-direction:column;align-items:center;gap:40px;margin-top:24px}
+    .card{
+      width:75%;background:var(--card);border-radius:14px;padding:18px;border:1px solid rgba(255,255,255,0.04);
+      box-shadow:0 6px 24px rgba(239,68,68,0.04);transition:transform .28s ease, box-shadow .28s ease, backdrop-filter .25s;
+      transform:translateY(12px);opacity:0;will-change:transform,opacity;
+    }
+    .card.in-view{transform:translateY(0);opacity:1}
+    .card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 28px 72px rgba(239,68,68,0.12);backdrop-filter: blur(6px);}
     body.light .card{background:var(--light-card);color:var(--light-text)}
 
-    /* reports collapsible */
-    .folder{background:var(--card);margin-bottom:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.05)}
-    .folder-header{padding:12px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:8px}
-    .folder-header:hover{background:rgba(239,68,68,0.08)}
+    .card h3{margin-bottom:6px}
+    .card p{color:var(--muted);font-size:14px;margin:0}
+
+    /* report link style so card is clickable */
+    .card a.card-link{display:block;color:inherit;text-decoration:none}
+
+    /* FOLDERS */
+    .folder{background:var(--card);margin-bottom:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);overflow:hidden}
+    .folder-header{padding:12px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:10px;justify-content:space-between}
+    .folder-header:hover{background:rgba(239,68,68,0.06)}
     .folder-content{display:none;padding:0 18px 12px 18px}
     .folder-content ul{list-style:none;padding-left:0}
-    .folder-content li{margin:6px 0;font-size:14px;color:var(--muted)}
+    .folder-content li{margin:8px 0;font-size:14px;color:var(--muted)}
     .folder-content a{color:inherit;text-decoration:none}
     .folder-content a:hover{color:var(--accent)}
     body.light .folder{background:var(--light-card)}
 
-    /* about me */
-    #about h2{font-family:Georgia,serif;font-size:26px;color:#e6eef6;margin-bottom:10px}
-    #about p.intro{font-family:Georgia,serif;font-size:18px;color:#9bb0c8;margin-bottom:20px;min-height:30px}
+    /* ABOUT */
+    #about h2{font-family:Georgia,serif;font-size:26px;color:var(--text);margin-bottom:10px}
+    #about p.intro{font-family:Georgia,serif;font-size:18px;color:#9bb0c8;margin-bottom:22px;line-height:1.6;letter-spacing:0.2px}
     #about ul{list-style:disc;margin-left:20px;color:var(--muted)}
-    body.light #about h2{color:#222}
 
-    /* contact */
-    #contact a{color:inherit;font-size:16px;text-decoration:none}
-    #contact a:hover{color:var(--accent)}
+    /* FOOTER */
+    footer.site-footer{text-align:center;color:var(--muted);font-size:13px;padding:18px;margin-top:28px}
 
-    footer{text-align:center;color:var(--muted);font-size:13px;padding:20px;margin-top:auto}
+    /* MODAL placeholder styling note (not used now but available if you switch to modals) */
+    .modal{display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;background:rgba(0,0,0,0.6)}
+    .modal .modal-content{background:var(--card);padding:18px;border-radius:12px;width:80%;max-height:86vh;overflow:auto}
+
   </style>
 </head>
 <body>
-  <aside id="sidebar">
-    <div class="avatar-wrapper">
-      <div class="avatar-circle"></div>
-      <div class="avatar-symbol">⚚</div>
+
+  <div id="hamburger" aria-label="Open menu" role="button" tabindex="0">
+    <i class="fa fa-bars"></i>
+  </div>
+
+  <aside id="sidebar" aria-label="Main navigation">
+    <div class="avatar-wrapper" title="codenamevenom avatar">
+      <div class="avatar-bg" aria-hidden="true"></div>
+      <div class="avatar-fill" role="img" aria-label="symbol">
+        <!-- symbol inside circle -->
+        <span class="avatar-icon">⚚</span>
+      </div>
     </div>
+
     <h2>CODENAMEVENOM</h2>
     <p>Cybersecurity Engineer · Offensive Researcher</p>
+
     <ul>
-      <li><a href="#home" onclick="showSection('home')"><i class="fa fa-home"></i> Home</a></li>
-      <li><a href="#reports" onclick="showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
-      <li><a href="#about" onclick="showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
-      <li><a href="#contact" onclick="showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
+      <li><a href="#home" onclick="showSection('home'); closeSidebarOnMobile()" aria-current="true"><i class="fa fa-home"></i> Home</a></li>
+      <li><a href="#reports" onclick="showSection('reports'); closeSidebarOnMobile()"><i class="fa fa-list"></i> Reports</a></li>
+      <li><a href="#about" onclick="showSection('about'); closeSidebarOnMobile()"><i class="fa fa-user"></i> About Me</a></li>
+      <li><a href="#contact" onclick="showSection('contact'); closeSidebarOnMobile()"><i class="fa fa-envelope"></i> Contact</a></li>
     </ul>
-    <div class="sidebar-bottom">
-      <div id="mode-toggle" class="circle-icon" title="Toggle theme"><i class="fa fa-moon"></i></div>
+
+    <div class="sidebar-bottom" role="region" aria-label="Actions">
+      <div id="mode-toggle" class="circle-icon" title="Toggle theme" role="button" tabindex="0" aria-pressed="false"><i class="fa fa-moon"></i></div>
       <a href="mailto:voxlab.services@gmail.com" class="circle-icon" title="Email"><i class="fa fa-envelope"></i></a>
     </div>
   </aside>
 
   <main id="content">
-    <section id="home" class="active">
+    <section id="home" class="active" aria-labelledby="homeHeading">
       <header data-aos="fade-down">
-        <h1>Security Portfolio — Accepted & Paid Reports</h1>
+        <h1 id="homeHeading">Security Portfolio — Accepted & Paid Reports</h1>
         <p style="color:var(--muted)">Selection of anonymized reports demonstrating offensive security findings and impact.</p>
       </header>
-      <div class="stack">
-        <div class="card" data-aos="fade-up"><h3>SSRF — /api/og/statistic</h3><p>Parameter allowed internal network discovery via SSRF.</p></div>
-        <div class="card" data-aos="fade-up"><h3>IDOR — /api/Log</h3><p>Exposed unauthorized resources through weak access control.</p></div>
-        <div class="card" data-aos="fade-up"><h3>Business Logic — Weak Email Validation</h3><p>Allowed automation and abuse of workflow.</p></div>
-        <div class="card" data-aos="fade-up"><h3>Improper Access Control — /register</h3><p>Registration endpoint abused without authorization.</p></div>
-        <div class="card" data-aos="fade-up"><h3>DOM XSS — /user/auth/chooseschema</h3><p>Reflected DOM injection led to XSS.</p></div>
-        <div class="card" data-aos="fade-up"><h3>IDOR — /api/quotes/[UUID]/</h3><p>Predictable UUID exposed other users' data.</p></div>
-        <div class="card" data-aos="fade-up"><h3>IDOR — /v2/apps/[ID]/verification-methods</h3><p>Endpoint leaked verification methods of other users.</p></div>
+
+      <div class="stack" id="cardStack" aria-live="polite">
+        <!-- Each card now links to a placeholder report page under /reports/ -->
+        <article class="card" data-report="./reports/ssrf-api-og-statistic.html" tabindex="0" role="article" aria-label="SSRF: api og statistic">
+          <a class="card-link" href="./reports/ssrf-api-og-statistic.html" target="_blank" rel="noopener noreferrer">
+            <h3>SSRF — /api/og/statistic</h3>
+            <p>Parameter allowed internal network discovery via SSRF.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/idor-api-log.html" tabindex="0" role="article" aria-label="IDOR: api Log">
+          <a class="card-link" href="./reports/idor-api-log.html" target="_blank" rel="noopener noreferrer">
+            <h3>IDOR — /api/Log</h3>
+            <p>Exposed unauthorized resources through weak access control.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/business-weak-email.html" tabindex="0" role="article" aria-label="Business Logic: Weak Email Validation">
+          <a class="card-link" href="./reports/business-weak-email.html" target="_blank" rel="noopener noreferrer">
+            <h3>Business Logic — Weak Email Validation</h3>
+            <p>Allowed automation and abuse of workflow.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/improper-register.html" tabindex="0" role="article" aria-label="Improper Access Control: register">
+          <a class="card-link" href="./reports/improper-register.html" target="_blank" rel="noopener noreferrer">
+            <h3>Improper Access Control — /register</h3>
+            <p>Registration endpoint abused without authorization.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/dom-xss-chooseschema.html" tabindex="0" role="article" aria-label="DOM XSS: chooseschema">
+          <a class="card-link" href="./reports/dom-xss-chooseschema.html" target="_blank" rel="noopener noreferrer">
+            <h3>DOM XSS — /user/auth/chooseschema</h3>
+            <p>Reflected DOM injection led to XSS.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/idor-quotes-uuid.html" tabindex="0" role="article" aria-label="IDOR: quotes UUID">
+          <a class="card-link" href="./reports/idor-quotes-uuid.html" target="_blank" rel="noopener noreferrer">
+            <h3>IDOR — /api/quotes/[UUID]/</h3>
+            <p>Predictable UUID exposed other users' data.</p>
+          </a>
+        </article>
+
+        <article class="card" data-report="./reports/idor-verif-methods.html" tabindex="0" role="article" aria-label="IDOR: apps verification methods">
+          <a class="card-link" href="./reports/idor-verif-methods.html" target="_blank" rel="noopener noreferrer">
+            <h3>IDOR — /v2/apps/[ID]/verification-methods</h3>
+            <p>Endpoint leaked verification methods of other users.</p>
+          </a>
+        </article>
       </div>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
+
+      <footer class="site-footer">© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
-    <section id="reports">
-      <h2>Reports by Category</h2>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> SSRF</div><div class="folder-content"><ul><li><a href="#">/api/og/statistic — Internal network SSRF</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> IDOR</div><div class="folder-content"><ul><li><a href="#">/api/Log — Exposed unauthorized resources</a></li><li><a href="#">/api/quotes/[UUID]/ — Predictable identifier leak</a></li><li><a href="#">/v2/apps/[ID]/verification-methods — Leaked user verification methods</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> XSS</div><div class="folder-content"><ul><li><a href="#">/user/auth/chooseschema — DOM-based XSS</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Business Logic</div><div class="folder-content"><ul><li><a href="#">Weak Email Validation — Workflow abuse</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Access Control</div><div class="folder-content"><ul><li><a href="#">/api/auth/local/register — Unauthorized registration</a></li></ul></div></div>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
+    <section id="reports" aria-labelledby="reportsHeading">
+      <h2 id="reportsHeading">Reports by Category</h2>
+
+      <div class="folder" id="folder-ssrf">
+        <div class="folder-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="folder-ssrf-content"
+             onclick="toggleFolder(this)">
+          <div><i class="fa fa-folder"></i> SSRF</div>
+          <div><i class="fa fa-chevron-down"></i></div>
+        </div>
+        <div id="folder-ssrf-content" class="folder-content" hidden>
+          <ul>
+            <li><a href="./reports/ssrf-api-og-statistic.html" target="_blank" rel="noopener noreferrer">/api/og/statistic — Internal network SSRF</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="folder" id="folder-idor">
+        <div class="folder-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="folder-idor-content"
+             onclick="toggleFolder(this)">
+          <div><i class="fa fa-folder"></i> IDOR</div>
+          <div><i class="fa fa-chevron-down"></i></div>
+        </div>
+        <div id="folder-idor-content" class="folder-content" hidden>
+          <ul>
+            <li><a href="./reports/idor-api-log.html" target="_blank" rel="noopener noreferrer">/api/Log — Exposed unauthorized resources</a></li>
+            <li><a href="./reports/idor-quotes-uuid.html" target="_blank" rel="noopener noreferrer">/api/quotes/[UUID]/ — Predictable identifier leak</a></li>
+            <li><a href="./reports/idor-verif-methods.html" target="_blank" rel="noopener noreferrer">/v2/apps/[ID]/verification-methods — Leaked user verification methods</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="folder" id="folder-xss">
+        <div class="folder-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="folder-xss-content"
+             onclick="toggleFolder(this)">
+          <div><i class="fa fa-folder"></i> XSS</div>
+          <div><i class="fa fa-chevron-down"></i></div>
+        </div>
+        <div id="folder-xss-content" class="folder-content" hidden>
+          <ul>
+            <li><a href="./reports/dom-xss-chooseschema.html" target="_blank" rel="noopener noreferrer">/user/auth/chooseschema — DOM-based XSS</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="folder" id="folder-business">
+        <div class="folder-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="folder-business-content"
+             onclick="toggleFolder(this)">
+          <div><i class="fa fa-folder"></i> Business Logic</div>
+          <div><i class="fa fa-chevron-down"></i></div>
+        </div>
+        <div id="folder-business-content" class="folder-content" hidden>
+          <ul>
+            <li><a href="./reports/business-weak-email.html" target="_blank" rel="noopener noreferrer">Weak Email Validation — Workflow abuse</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="folder" id="folder-access">
+        <div class="folder-header" role="button" tabindex="0"
+             aria-expanded="false" aria-controls="folder-access-content"
+             onclick="toggleFolder(this)">
+          <div><i class="fa fa-folder"></i> Access Control</div>
+          <div><i class="fa fa-chevron-down"></i></div>
+        </div>
+        <div id="folder-access-content" class="folder-content" hidden>
+          <ul>
+            <li><a href="./reports/improper-register.html" target="_blank" rel="noopener noreferrer">/api/auth/local/register — Unauthorized registration</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <footer class="site-footer">© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
-    <section id="about">
-      <h2>About Me</h2>
-      <p class="intro" id="particleText"></p>
+    <section id="about" aria-labelledby="aboutHeading">
+      <h2 id="aboutHeading">About Me</h2>
+      <p class="intro" id="particleText">Driven by curiosity, I explore systems to strengthen their security while continuously learning.</p>
       <h3>Who am I?</h3>
       <ul>
         <li>Offensive Cybersecurity Researcher</li>
         <li>STEM Graduate</li>
-        <li>eJPT holder, successfully achieved</li>
-        <li>Currently preparing for OSCP</li>
+        <li>eJPT holder</li>
+        <li>Preparing for OSCP</li>
       </ul>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
+      <footer class="site-footer">© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
-    <section id="contact">
-      <h2>Contact</h2>
+    <section id="contact" aria-labelledby="contactHeading">
+      <h2 id="contactHeading">Contact</h2>
       <p><a href="mailto:voxlab.services@gmail.com">voxlab.services@gmail.com</a></p>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
+      <footer class="site-footer">© 2025 codenamevenom — All rights reserved</footer>
     </section>
   </main>
 
-  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
   <script>
-    AOS.init({duration:700, once:false, offset:100});
+    AOS.init({duration:700, once:true, offset:120});
 
+    // Simple SPA nav
     function showSection(id){
-      document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      if(id==='about'){particleEffect();}
+      document.querySelectorAll('main section').forEach(s=>{
+        s.classList.remove('active');
+      });
+      const el = document.getElementById(id);
+      if(el) el.classList.add('active');
+
+      // if about, run particle spacing tweak
+      if(id === 'about') particleEffect();
     }
 
-    function toggleFolder(header){let c=header.nextElementSibling;c.style.display=c.style.display==='block'?'none':'block';}
-    document.getElementById('mode-toggle').onclick=function(){document.body.classList.toggle('light');};
+    // Accessibility-friendly folder toggles
+    function toggleFolder(header){
+      const content = header.nextElementSibling;
+      const expanded = header.getAttribute('aria-expanded') === 'true';
+      header.setAttribute('aria-expanded', String(!expanded));
+      if(!expanded){
+        content.hidden = false;
+      } else {
+        content.hidden = true;
+      }
+    }
 
+    // Theme toggle with persisted preference
+    const body = document.body;
+    const modeToggle = document.getElementById('mode-toggle');
+    const savedTheme = localStorage.getItem('theme');
+    if(savedTheme === 'light') body.classList.add('light');
+
+    function setToggleAria(){
+      const pressed = body.classList.contains('light');
+      modeToggle.setAttribute('aria-pressed', String(pressed));
+      modeToggle.title = pressed ? 'Light theme (on)' : 'Toggle theme';
+    }
+    setToggleAria();
+
+    modeToggle.onclick = ()=>{
+      body.classList.toggle('light');
+      localStorage.setItem('theme', body.classList.contains('light') ? 'light' : 'dark');
+      setToggleAria();
+    };
+
+    // Mobile hamburger
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    hamburger.addEventListener('click', ()=> sidebar.classList.toggle('open'));
+    hamburger.addEventListener('keydown', (e)=> { if(e.key === 'Enter') sidebar.classList.toggle('open') });
+
+    function closeSidebarOnMobile(){
+      if(window.innerWidth <= 900) sidebar.classList.remove('open');
+    }
+
+    // IntersectionObserver for cards lazy reveal (better performance than relying on scroll events)
+    const cards = document.querySelectorAll('.card');
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          e.target.classList.add('in-view');
+          // once visible, unobserve to avoid repeated triggers
+          io.unobserve(e.target);
+        }
+      });
+    }, {threshold: 0.12});
+    cards.forEach(c => io.observe(c));
+
+    // Make entire card keyboard-activatable to open report (open new tab)
+    document.querySelectorAll('.card').forEach(card=>{
+      card.addEventListener('keydown', (ev)=>{
+        if(ev.key === 'Enter' || ev.key === ' '){
+          const link = card.querySelector('a.card-link');
+          if(link) window.open(link.href, '_blank', 'noopener');
+        }
+      });
+    });
+
+    // Particle-style intro effect with spacing and fade-in (improved spacing)
     function particleEffect(){
-      const el=document.getElementById('particleText');
-      const text="Driven by curiosity, I explore systems to strengthen their security while continuously learning.";
-      el.innerHTML='';
+      const el = document.getElementById('particleText');
+      const text = "Driven by curiosity, I explore systems to strengthen their security while continuously learning.";
+      el.innerHTML = '';
       [...text].forEach((ch,i)=>{
-        const span=document.createElement('span');
-        span.textContent=ch===' '?'\u00A0':ch;
-        span.style.opacity=0;
-        span.style.display='inline-block';
-        span.style.filter='blur(6px)';
-        span.style.transition=`opacity 0.4s ${i*50}ms, filter 0.4s ${i*50}ms`;
+        const span = document.createElement('span');
+        // small random spacing for 'organic' feel
+        span.textContent = ch === ' ' ? '\u00A0' : ch;
+        span.style.opacity = 0;
+        span.style.display = 'inline-block';
+        span.style.marginRight = (Math.random()*2).toFixed(1) + 'px';
+        span.style.filter = 'blur(6px)';
+        span.style.transition = `opacity 0.28s ${i*28}ms, transform 0.28s ${i*28}ms, filter 0.28s ${i*28}ms`;
         el.appendChild(span);
       });
-      setTimeout(()=>{el.querySelectorAll('span').forEach(s=>{s.style.opacity=1;s.style.filter='blur(0)';});},100);
+      setTimeout(()=> {
+        el.querySelectorAll('span').forEach(s => {
+          s.style.opacity = 1;
+          s.style.transform = 'translateY(0)';
+          s.style.filter = 'blur(0)';
+        });
+      }, 80);
     }
 
-    if(document.getElementById('about').classList.contains('active')){
-      particleEffect();
-    }
+    // Ensure about text effect runs if page loads on about
+    if(document.getElementById('about').classList.contains('active')) particleEffect();
+
+    // Small improvement: keyboard navigation for folder headers
+    document.querySelectorAll('.folder-header').forEach(h=>{
+      h.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') toggleFolder(h);
+      });
+    });
+
+    // optional: close sidebar when resizing to desktop
+    window.addEventListener('resize', ()=>{
+      if(window.innerWidth > 900) sidebar.classList.remove('open');
+    });
   </script>
 </body>
 </html>
