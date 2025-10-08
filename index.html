@@ -444,7 +444,6 @@ if r.status_code == 200 and "true" in r.text.lower():
 }
   // --- template placeholder per altri report ---
   else if (id === 'logic') {
-  // titolo
   if (titleEl) titleEl.textContent = "Business Logic — Weak Email Validation";
 
   // il tuo HTML report (usalo esattamente come il blocco che mi hai dato)
@@ -571,7 +570,8 @@ for p in payloads:
 `;
 
   // inietta in modo sicuro dentro #report-detail (o #report-body se preferisci)
-  safeInjectReport('report-detail', reportHtml);
+  safeInjectReport('report-body', reportHtml);
+
 
   
 
