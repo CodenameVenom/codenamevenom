@@ -32,20 +32,18 @@
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    /* avatar with custom snake svg */
+    /* avatar (loop symbol), static by default, animates on hover */
     .avatar-wrapper{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-    .avatar-circle{position:absolute;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at center, rgba(239,68,68,0.4), transparent 70%);border:3px solid var(--accent);box-shadow:0 0 20px rgba(239,68,68,0.4);transition:transform .5s ease, box-shadow .5s ease}
-    .avatar-symbol{z-index:2;width:70px;height:70px;}
-    .avatar-symbol svg{width:100%;height:100%;fill:none;stroke:var(--text);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s, transform .5s}
-    .avatar-wrapper:hover .avatar-circle{transform:rotate(360deg) scale(1.1);box-shadow:0 0 30px rgba(239,68,68,0.9)}
-    .avatar-wrapper:hover .avatar-symbol svg{stroke:var(--accent);transform:scale(1.15)}
-
-    @keyframes fade{from{opacity:0}to{opacity:1}}
+    .avatar-circle{position:absolute;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 50%, rgba(239,68,68,0.35), transparent 70%);border:3px solid var(--accent);box-shadow:0 0 12px rgba(239,68,68,0.4);transition:transform .6s ease, box-shadow .6s ease}
+    .avatar-symbol{z-index:2;font-size:44px;color:var(--text);transition:transform .5s ease, color .5s ease}
+    .avatar-wrapper:hover .avatar-circle{transform:rotate(360deg) scale(1.06);box-shadow:0 0 26px rgba(239,68,68,0.85)}
+    .avatar-wrapper:hover .avatar-symbol{transform:scale(1.28) rotate(18deg);color:var(--accent)}
 
     /* content */
     #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh}
     section{display:none;animation:fade .5s ease;flex:1}
     section.active{display:block}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
 
     /* home cards stacked + centered */
     .stack{display:flex;flex-direction:column;align-items:center;gap:60px;margin-top:40px}
@@ -53,7 +51,7 @@
     .card:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(239,68,68,0.14);background:rgba(239,68,68,0.05)}
     body.light .card{background:var(--light-card);color:var(--light-text)}
 
-    /* reports collapsible */
+    /* reports collapsible (minimal, GoDiego-style) */
     .folder{background:var(--card);margin-bottom:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.05)}
     .folder-header{padding:12px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:8px}
     .folder-header:hover{background:rgba(239,68,68,0.08)}
@@ -79,24 +77,17 @@
 </head>
 <body>
   <aside id="sidebar">
-    <div class="avatar-wrapper">
+    <div class="avatar-wrapper" title="codenamevenom">
       <div class="avatar-circle"></div>
-      <div class="avatar-symbol">
-        <!-- Custom snake in circle SVG -->
-        <svg viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="40" stroke="currentColor" stroke-width="3" fill="none" />
-          <path d="M30 50 q20 -30 40 0 q-20 30 -40 0 z" stroke="currentColor" stroke-width="3" fill="none"/>
-          <circle cx="68" cy="40" r="3" fill="currentColor" />
-        </svg>
-      </div>
+      <div class="avatar-symbol">⟳</div>
     </div>
     <h2>CODENAMEVENOM</h2>
     <p>Cybersecurity Engineer · Offensive Researcher</p>
     <ul>
-      <li><a href="#home" onclick="showSection('home')"><i class="fa fa-home"></i> Home</a></li>
-      <li><a href="#reports" onclick="showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
-      <li><a href="#about" onclick="showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
-      <li><a href="#contact" onclick="showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
+      <li><a href="#home" onclick="return showSection('home')"><i class="fa fa-home"></i> Home</a></li>
+      <li><a href="#reports" onclick="return showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
+      <li><a href="#about" onclick="return showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
+      <li><a href="#contact" onclick="return showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
     </ul>
     <div class="sidebar-bottom">
       <div id="mode-toggle" class="circle-icon" title="Toggle theme"><i class="fa fa-moon"></i></div>
@@ -166,25 +157,37 @@
       document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
       if(id==='about'){particleEffect();}
+      return false;
     }
 
-    function toggleFolder(header){let c=header.nextElementSibling;c.style.display=c.style.display==='block'?'none':'block';}
-    document.getElementById('mode-toggle').onclick=function(){document.body.classList.toggle('light');};
+    function toggleFolder(header){
+      const c=header.nextElementSibling;
+      c.style.display = c.style.display==='block' ? 'none' : 'block';
+    }
+
+    document.getElementById('mode-toggle').onclick=function(){
+      document.body.classList.toggle('light');
+      this.innerHTML = document.body.classList.contains('light') ? '<i class="fa fa-sun"></i>' : '<i class="fa fa-moon"></i>';
+    };
 
     function particleEffect(){
       const el=document.getElementById('particleText');
       const text="Driven by curiosity, I explore systems to strengthen their security while continuously learning.";
+      if(!el) return;
       el.innerHTML='';
       [...text].forEach((ch,i)=>{
         const span=document.createElement('span');
-        span.textContent=ch===' '?'\u00A0':ch;
+        span.textContent= ch===' ' ? '\u00A0' : ch;
         span.style.opacity=0;
         span.style.display='inline-block';
         span.style.filter='blur(6px)';
-        span.style.transition=`opacity 0.4s ${i*50}ms, filter 0.4s ${i*50}ms`;
+        span.style.transform='translateY(6px)';
+        span.style.transition=`opacity 0.35s ${i*40}ms, filter 0.35s ${i*40}ms, transform 0.35s ${i*40}ms`;
         el.appendChild(span);
       });
-      setTimeout(()=>{el.querySelectorAll('span').forEach(s=>{s.style.opacity=1;s.style.filter='blur(0)';});},100);
+      requestAnimationFrame(()=>{
+        el.querySelectorAll('span').forEach(s=>{s.style.opacity=1;s.style.filter='blur(0)';s.style.transform='translateY(0)';});
+      });
     }
 
     function openReport(id){
@@ -201,6 +204,11 @@
       };
       document.getElementById('report-title').innerText=titleMap[id]||"Report";
       document.getElementById('report-body').innerText="Detailed content for "+(titleMap[id]||id)+" will be added here.";
+      return false;
     }
 
-    if(document.getElementById('about').classList.contains('active
+    // Initialize About text if About is default (not the case now, but safe)
+    if(document.getElementById('about').classList.contains('active')){ particleEffect(); }
+  </script>
+</body>
+</html>
