@@ -32,11 +32,11 @@
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    /* ---------- AVATAR: robust, svg-friendly, accessible + mobile ---------- */
+    /* ---------- AVATAR: single ring, full-load spin + hover scale ---------- */
 
 .avatar-wrapper {
   position: relative;
-  width: 140px;               /* slightly larger by default */
+  width: 140px;                /* desktop default */
   height: 140px;
   display: flex;
   align-items: center;
@@ -46,21 +46,24 @@
   outline: none;
 }
 
-/* decorative ring (kept but can be hidden by setting display:none) */
+/* single decorative ring (neon glow) */
 .avatar-circle {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.28), transparent 72%);
-  border: 3px solid var(--accent);
-  box-shadow: 0 0 12px rgba(239,68,68,0.38);
-  transition: transform 1.0s cubic-bezier(.2,.9,.2,1), box-shadow .45s ease;
+  background: transparent;                      /* no inner fill */
+  border: 4px solid rgba(239,68,68,0.18);       /* visible ring */
+  box-shadow:
+    0 0 20px rgba(239,68,68,0.08),
+    0 0 40px rgba(239,68,68,0.12),
+    0 0 8px rgba(0,0,0,0.45) inset;
+  transition: transform 0.9s cubic-bezier(.2,.9,.2,1), box-shadow .45s ease;
   transform-origin: 50% 50%;
   pointer-events: none;
   will-change: transform, box-shadow;
 }
 
-/* symbol container (holds SVG or IMG) */
+/* symbol container (holds the svg/img emblem) */
 .avatar-symbol {
   z-index: 2;
   display: flex;
@@ -74,80 +77,67 @@
   will-change: transform;
   border-radius: 50%;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.04), transparent 72%);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+  background: transparent; /* remove inner ring/gradient to avoid double circle */
 }
 
-/* JS-driven single initial pulse (class added then removed by script) */
-.avatar-symbol.pulse-start {
-  animation: avatar-pulse 1150ms cubic-bezier(.2,.9,.2,1) 1 both;
-}
+/* initial full spin and gentle scale on page load (class added by JS) */
+.avatar-circle.spin-start { animation: circle-spin 900ms cubic-bezier(.2,.9,.2,1) 1 both; }
+.avatar-symbol.spin-start { animation: symbol-spin 900ms cubic-bezier(.2,.9,.2,1) 1 both; }
 
-/* svg inside symbol: scale-to-fit; uses currentColor for stroke/fill if paths are set */
-.avatar-symbol svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-}
-
-/* fallback for img inside symbol */
+/* svg/img fit */
+.avatar-symbol svg,
 .avatar-symbol img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 92%;
+  height: 92%;
   display: block;
+  object-fit: contain;
 }
 
-/* Hover / focus: subtle ring rotation + symbol scale/rotate */
-.avatar-wrapper:hover .avatar-circle,
-.avatar-wrapper:focus-within .avatar-circle {
-  transform: rotate(180deg) scale(1.03);
-  box-shadow: 0 0 26px rgba(239,68,68,0.85);
-}
-
+/* Hover / focus: scale symbol, slightly scale ring */
 .avatar-wrapper:hover .avatar-symbol,
 .avatar-wrapper:focus-within .avatar-symbol {
-  transform: rotate(8deg) scale(1.08);
+  transform: scale(1.16);
   color: var(--accent);
-  animation-play-state: paused;
+}
+.avatar-wrapper:hover .avatar-circle,
+.avatar-wrapper:focus-within .avatar-circle {
+  transform: scale(1.06);
+  box-shadow:
+    0 0 30px rgba(239,68,68,0.18),
+    0 0 60px rgba(239,68,68,0.24);
 }
 
-/* keyboard accessibility focus */
+/* keyboard accessibility */
 .avatar-wrapper:focus-visible {
   box-shadow: 0 0 0 6px rgba(239,68,68,0.06);
   border-radius: 16px;
 }
 
-/* initial pulse keyframes (gentle) */
-@keyframes avatar-pulse {
-  0%   { transform: scale(0.92); opacity: 0.78; }
-  45%  { transform: scale(1.18); opacity: 1; }
-  85%  { transform: scale(0.99); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+/* Keyframes: circle full rotation & symbol spin */
+@keyframes circle-spin {
+  0%   { transform: rotate(0deg) scale(0.96); opacity: 0.9; }
+  50%  { transform: rotate(180deg) scale(1.06); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+@keyframes symbol-spin {
+  0%   { transform: rotate(0deg) scale(0.96); opacity: 0.9; }
+  50%  { transform: rotate(180deg) scale(1.12); opacity: 1; }
+  100% { transform: rotate(360deg) scale(1); opacity: 1; }
 }
 
-/* Respect reduced-motion preference */
+/* Respect reduced-motion */
 @media (prefers-reduced-motion: reduce) {
-  .avatar-circle,
-  .avatar-symbol {
+  .avatar-circle, .avatar-symbol {
     transition: none !important;
     animation: none !important;
     transform: none !important;
   }
   .avatar-wrapper:hover .avatar-circle,
-  .avatar-wrapper:hover .avatar-symbol {
-    transform: none !important;
-    box-shadow: 0 0 12px rgba(239,68,68,0.4) !important;
-  }
+  .avatar-wrapper:hover .avatar-symbol { transform: none !important; box-shadow: 0 0 12px rgba(239,68,68,0.4) !important; }
 }
 
-/* ---------- RESPONSIVE LAYOUT: mobile friendly ---------- */
-/* breakpoint: small devices */
+/* ---------- MOBILE: sidebar to topbar + refined hamburger ---------- */
 @media (max-width: 880px) {
-  /* Make sidebar horizontal/topbar */
   #sidebar {
     position: relative;
     width: 100%;
@@ -159,51 +149,54 @@
     box-shadow: none;
   }
 
-  /* keep avatar but reduce size */
-  .avatar-wrapper {
-    width: 64px;
-    height: 64px;
-    margin-bottom: 0;
+  .avatar-wrapper { width: 72px; height: 72px; margin-bottom: 0; }
+  .avatar-symbol { width: 56px; height: 56px; }
+  .avatar-symbol img, .avatar-symbol svg { width: 100%; height: 100%; }
+
+  /* hide title & subtitle to save vertical space (optional) */
+  #sidebar h2, #sidebar p { display: none; }
+
+  /* mobile menu toggle (clean) */
+  #menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.03);
+    color: var(--text);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
-  .avatar-symbol {
-    width: 48px;
-    height: 48px;
-  }
-  .avatar-symbol img,
-  .avatar-symbol svg {
-    width: 48px;
-    height: 48px;
+  #menu-toggle .hamburger {
+    position: relative;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    box-shadow:
+      0 6px 0 0 currentColor,
+      0 -6px 0 0 currentColor;
+    border-radius: 2px;
   }
 
-  /* hide large title / subtitle to save space (optional) */
-  #sidebar h2 { display: none; }
-  #sidebar p  { display: none; }
-
-  /* mobile menu: links hidden by default, shown when sidebar has .open */
   #sidebar ul {
     display: none;
     position: absolute;
-    left: 10px;
-    right: 10px;
+    left: 8px;
+    right: 8px;
     top: 64px;
     background: var(--card);
     padding: 12px;
     border-radius: 10px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-    z-index: 20;
+    z-index: 120;
   }
   #sidebar.open ul { display: block; }
-
-  /* content uses full width */
   #content { margin-left: 0; padding: 18px; max-width: 100%; }
-
-  /* tighten spacing for cards */
-  .stack { gap: 18px; margin-top: 14px; padding: 0 8px; }
-  .card  { max-width: 100%; padding: 14px; }
-
-  /* ensure footer has proper spacing on mobile */
-  footer { padding: 14px 8px; }
 }
+
 
 
 
@@ -402,16 +395,16 @@ body.light .folder{ background:var(--light-card); }
 <body>
   <aside id="sidebar">
     <!-- START: avatar (replace the old avatar-wrapper block) -->
-<!-- avatar: single emblem (use img or inline svg). Put this in the sidebar -->
+<!-- AVATAR: single-ring emblem -->
 <div class="avatar-wrapper" title="codenamevenom" tabindex="0" aria-label="CodenameVenom avatar">
   <div class="avatar-circle" aria-hidden="true"></div>
   <div class="avatar-symbol" aria-hidden="false">
-    <!-- If your file is at repo root -->
+    <!-- img path: use repo root or assets/ as appropriate -->
     <img src="avatar-venom.svg" alt="CodenameVenom emblem" />
-    <!-- If placed in assets/ use src="assets/avatar-venom.svg" -->
-    <!-- Optionally: paste inline SVG here for per-path animation control -->
+    <!-- If you prefer inline SVG, paste it here instead of <img> -->
   </div>
 </div>
+
 
 <!-- END: avatar -->
 
@@ -1195,27 +1188,93 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
   })();
 </script>
 <script>
-  // Mobile menu toggle (small simple behavior)
-  (function(){
-    // create toggle button dynamically (so markup doesn't clutter desktop)
-    const sidebar = document.getElementById('sidebar');
-    if (!sidebar) return;
-    const btn = document.createElement('button');
-    btn.id = 'menu-toggle';
-    btn.type = 'button';
-    btn.setAttribute('aria-expanded','false');
-    btn.setAttribute('aria-label','Toggle menu');
-    btn.style.cssText = 'background:transparent;border:0;color:inherit;font-size:22px;cursor:pointer;padding:6px;margin-left:6px';
-    btn.innerHTML = '&#9776;'; // hamburger
-    // insert at start of sidebar
-    sidebar.insertBefore(btn, sidebar.firstChild);
+(function(){
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
 
-    btn.addEventListener('click', function(){
-      const open = sidebar.classList.toggle('open');
-      btn.setAttribute('aria-expanded', String(open));
-    });
-  })();
+  // Rimuovi eventuale toggle preesistente
+  const prev = document.getElementById('menu-toggle');
+  if (prev) prev.remove();
+
+  // Create button
+  const btn = document.createElement('button');
+  btn.id = 'menu-toggle';
+  btn.type = 'button';
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', 'Toggle menu');
+  btn.className = 'menu-toggle';
+  // use a simple styled hamburger (CSS should style .hamburger)
+  btn.innerHTML = '<span class="hamburger" aria-hidden="true"></span>';
+
+  // Insert button at the top of sidebar (before first child)
+  sidebar.insertBefore(btn, sidebar.firstChild);
+
+  // Utility: find sidebar list
+  const sidebarList = sidebar.querySelector('ul');
+
+  // Open/close logic
+  function openSidebar() {
+    sidebar.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    if (sidebarList) {
+      // rely on CSS to show it; also set inline fallback
+      sidebarList.style.display = 'block';
+      // focus first link for keyboard users
+      const firstLink = sidebarList.querySelector('a, button');
+      if (firstLink) firstLink.focus();
+    }
+    // close on outside click
+    setTimeout(() => {
+      document.addEventListener('click', outsideHandler);
+    }, 10);
+    document.addEventListener('keydown', escHandler);
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    if (sidebarList) sidebarList.style.display = 'none';
+    document.removeEventListener('click', outsideHandler);
+    document.removeEventListener('keydown', escHandler);
+  }
+
+  function toggleSidebar(e) {
+    e.stopPropagation();
+    if (sidebar.classList.contains('open')) closeSidebar();
+    else openSidebar();
+  }
+
+  function outsideHandler(e) {
+    if (!sidebar.contains(e.target)) closeSidebar();
+  }
+
+  function escHandler(e) {
+    if (e.key === 'Escape' || e.key === 'Esc') closeSidebar();
+  }
+
+  // attach toggle
+  btn.addEventListener('click', toggleSidebar);
+
+  // ensure menu is hidden on load for small screens (defensive)
+  if (window.matchMedia && window.matchMedia('(max-width:880px)').matches) {
+    if (sidebarList) sidebarList.style.display = 'none';
+  }
+
+  // Keep layout consistent when resizing: close menu and restore display rules
+  window.addEventListener('resize', () => {
+    if (window.matchMedia('(min-width:881px)').matches) {
+      // desktop: ensure nav visible, remove inline style
+      if (sidebarList) sidebarList.style.display = '';
+      sidebar.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    } else {
+      // mobile: hide by default
+      if (sidebarList && !sidebar.classList.contains('open')) sidebarList.style.display = 'none';
+    }
+  });
+})();
 </script>
+
 
 
 </body>
