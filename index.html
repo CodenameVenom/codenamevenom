@@ -139,15 +139,18 @@
 /* ---------- MOBILE: sidebar to topbar + refined hamburger ---------- */
 @media (max-width: 880px) {
   #sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    box-shadow: none;
-  }
+  position: relative;
+  width: 100%;
+  height: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  box-shadow: none;
+}
+body { flex-direction: column; }   /* per far scendere il contenuto sotto */
+#content { margin-left:0; max-width:100%; padding:18px; }
+
 
   .avatar-wrapper { width: 72px; height: 72px; margin-bottom: 0; }
   .avatar-symbol { width: 56px; height: 56px; }
@@ -156,46 +159,37 @@
   /* hide title & subtitle to save vertical space (optional) */
   #sidebar h2, #sidebar p { display: none; }
 
-  /* mobile menu toggle (clean) */
-  #menu-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.03);
-    color: var(--text);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  #menu-toggle .hamburger {
-    position: relative;
-    width: 20px;
-    height: 2px;
-    background: currentColor;
-    box-shadow:
-      0 6px 0 0 currentColor,
-      0 -6px 0 0 currentColor;
-    border-radius: 2px;
-  }
-
-  #sidebar ul {
-    display: none;
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    top: 64px;
-    background: var(--card);
-    padding: 12px;
-    border-radius: 10px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-    z-index: 120;
-  }
-  #sidebar.open ul { display: block; }
-  #content { margin-left: 0; padding: 18px; max-width: 100%; }
+  /* hamburger minimal fix */
+.menu-toggle{
+  background:transparent;
+  border:0;
+  cursor:pointer;
+  padding:6px;
+  margin-right:auto; /* lo spinge a sinistra */
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+.menu-toggle .hamburger{
+  width:20px;
+  height:2px;
+  background:currentColor;
+  position:relative;
+  border-radius:2px;
+}
+.menu-toggle .hamburger::before,
+.menu-toggle .hamburger::after{
+  content:"";
+  position:absolute;
+  left:0;
+  width:100%;
+  height:2px;
+  background:currentColor;
+  border-radius:2px;
+}
+.menu-toggle .hamburger::before{ top:-6px; }
+.menu-toggle .hamburger::after{ top:6px; }
+
 
 
 
@@ -1157,36 +1151,34 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
     if(document.getElementById('about').classList.contains('active')){ particleEffect(); }
   </script>
   <script>
-  // Avatar pulse helper — triggers single pulse on load and on pageshow (bfcache)
-  (function(){
-    function startPulse() {
-      const sym = document.querySelector('.avatar-symbol');
-      if (!sym) return;
-      // restart animation reliably
-      sym.classList.remove('pulse-start');
-      // trigger reflow to reset animation
-      // eslint-disable-next-line no-unused-expressions
-      sym.offsetWidth;
-      sym.classList.add('pulse-start');
+(function(){
+  function startSpin() {
+    const circle = document.querySelector('.avatar-circle');
+    const symbol = document.querySelector('.avatar-symbol');
+    if (!circle || !symbol) return;
 
-      // ensure pulse class removed when animation ends (keeps DOM clean)
-      function onEnd() {
-        sym.classList.remove('pulse-start');
-        sym.removeEventListener('animationend', onEnd);
-      }
-      sym.addEventListener('animationend', onEnd);
-    }
+    // restart animation reliably
+    circle.classList.remove('spin-start');
+    symbol.classList.remove('spin-start');
+    // trigger reflow
+    void circle.offsetWidth;
 
-    // Fire when DOM ready and when page is restored from bfcache
-    document.addEventListener('DOMContentLoaded', startPulse);
-    window.addEventListener('pageshow', function(e){
-      if (e.persisted) startPulse();
-    });
+    circle.classList.add('spin-start');
+    symbol.classList.add('spin-start');
 
-    // Optional: expose a manual replay function for debugging in console
-    window.replayAvatarPulse = startPulse;
-  })();
+    // cleanup
+    function endCircle(){ circle.classList.remove('spin-start'); circle.removeEventListener('animationend', endCircle); }
+    function endSymbol(){ symbol.classList.remove('spin-start'); symbol.removeEventListener('animationend', endSymbol); }
+    circle.addEventListener('animationend', endCircle);
+    symbol.addEventListener('animationend', endSymbol);
+  }
+
+  document.addEventListener('DOMContentLoaded', startSpin);
+  window.addEventListener('pageshow', e => { if (e.persisted) startSpin(); });
+})();
 </script>
+
+  
 <script>
 (function(){
   const sidebar = document.getElementById('sidebar');
