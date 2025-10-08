@@ -51,7 +51,19 @@
 
     /* home cards stacked + centered */
     .stack{display:flex;flex-direction:column;align-items:center;gap:60px;margin-top:40px}
-    .card{width:70%;background:var(--card);border-radius:14px;padding:20px;box-shadow:0 0 16px rgba(239,68,68,0.08);border:1px solid rgba(255,255,255,0.04);transition:transform 0.28s ease, box-shadow 0.28s ease, background .3s;cursor:pointer}
+    .card{
+      display:block;
+      width:70%;
+      background:var(--card);
+      border-radius:14px;
+      padding:20px;
+      box-shadow:0 0 16px rgba(239,68,68,0.08);
+      border:1px solid rgba(255,255,255,0.04);
+      transition:transform 0.28s ease, box-shadow 0.28s ease, background .3s;
+      cursor:pointer;
+      color:inherit;
+      text-decoration:none;
+    }
     .card:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(239,68,68,0.14);background:rgba(239,68,68,0.05)}
     body.light .card{background:var(--light-card);color:var(--light-text)}
 
@@ -106,24 +118,66 @@
         <p style="color:var(--muted)">Selection of anonymized reports demonstrating offensive security findings and impact.</p>
       </header>
       <div class="stack">
-        <div class="card" data-aos="fade-up" onclick="openReport('ssrf')"><h3>SSRF — /api/og/statistic</h3><p>Parameter allowed internal network discovery via SSRF.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('idor1')"><h3>IDOR — /api/Log</h3><p>Exposed unauthorized resources through weak access control.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('logic')"><h3>Business Logic — Weak Email Validation</h3><p>Allowed automation and abuse of workflow.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('access')"><h3>Improper Access Control — /register</h3><p>Registration endpoint abused without authorization.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('xss')"><h3>DOM XSS — /user/auth/chooseschema</h3><p>Reflected DOM injection led to XSS.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('idor2')"><h3>IDOR — /api/quotes/[UUID]/</h3><p>Predictable UUID exposed other users' data.</p></div>
-        <div class="card" data-aos="fade-up" onclick="openReport('idor3')"><h3>IDOR — /v2/apps/[ID]/verification-methods</h3><p>Endpoint leaked verification methods of other users.</p></div>
+        <a class="card" data-aos="fade-up" href="./reports/ssrf-api-og-statistic.html" target="_blank" rel="noopener">
+          <h3>SSRF — /api/og/statistic</h3><p>Parameter allowed internal network discovery via SSRF.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/idor-api-log.html" target="_blank" rel="noopener">
+          <h3>IDOR — /api/Log</h3><p>Exposed unauthorized resources through weak access control.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/business-weak-email.html" target="_blank" rel="noopener">
+          <h3>Business Logic — Weak Email Validation</h3><p>Allowed automation and abuse of workflow.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/improper-register.html" target="_blank" rel="noopener">
+          <h3>Improper Access Control — /register</h3><p>Registration endpoint abused without authorization.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/dom-xss-chooseschema.html" target="_blank" rel="noopener">
+          <h3>DOM XSS — /user/auth/chooseschema</h3><p>Reflected DOM injection led to XSS.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/idor-quotes-uuid.html" target="_blank" rel="noopener">
+          <h3>IDOR — /api/quotes/[UUID]/</h3><p>Predictable UUID exposed other users' data.</p>
+        </a>
+        <a class="card" data-aos="fade-up" href="./reports/idor-verification-methods.html" target="_blank" rel="noopener">
+          <h3>IDOR — /v2/apps/[ID]/verification-methods</h3><p>Endpoint leaked verification methods of other users.</p>
+        </a>
       </div>
       <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
     <section id="reports">
       <h2>Reports by Category</h2>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> SSRF</div><div class="folder-content"><ul><li><a href="#" onclick="openReport('ssrf')">/api/og/statistic — Internal network SSRF</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> IDOR</div><div class="folder-content"><ul><li><a href="#" onclick="openReport('idor1')">/api/Log — Exposed unauthorized resources</a></li><li><a href="#" onclick="openReport('idor2')">/api/quotes/[UUID]/ — Predictable identifier leak</a></li><li><a href="#" onclick="openReport('idor3')">/v2/apps/[ID]/verification-methods — Leaked user verification methods</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> XSS</div><div class="folder-content"><ul><li><a href="#" onclick="openReport('xss')">/user/auth/chooseschema — DOM-based XSS</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Business Logic</div><div class="folder-content"><ul><li><a href="#" onclick="openReport('logic')">Weak Email Validation — Workflow abuse</a></li></ul></div></div>
-      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Access Control</div><div class="folder-content"><ul><li><a href="#" onclick="openReport('access')">/api/auth/local/register — Unauthorized registration</a></li></ul></div></div>
+      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> SSRF</div>
+        <div class="folder-content">
+          <ul><li><a href="./reports/ssrf-api-og-statistic.html" target="_blank" rel="noopener">/api/og/statistic — Internal network SSRF</a></li></ul>
+        </div>
+      </div>
+
+      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> IDOR</div>
+        <div class="folder-content">
+          <ul>
+            <li><a href="./reports/idor-api-log.html" target="_blank" rel="noopener">/api/Log — Exposed unauthorized resources</a></li>
+            <li><a href="./reports/idor-quotes-uuid.html" target="_blank" rel="noopener">/api/quotes/[UUID]/ — Predictable identifier leak</a></li>
+            <li><a href="./reports/idor-verification-methods.html" target="_blank" rel="noopener">/v2/apps/[ID]/verification-methods — Leaked user verification methods</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> XSS</div>
+        <div class="folder-content">
+          <ul><li><a href="./reports/dom-xss-chooseschema.html" target="_blank" rel="noopener">/user/auth/chooseschema — DOM-based XSS</a></li></ul>
+        </div>
+      </div>
+
+      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Business Logic</div>
+        <div class="folder-content">
+          <ul><li><a href="./reports/business-weak-email.html" target="_blank" rel="noopener">Weak Email Validation — Workflow abuse</a></li></ul>
+        </div>
+      </div>
+
+      <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Access Control</div>
+        <div class="folder-content">
+          <ul><li><a href="./reports/improper-register.html" target="_blank" rel="noopener">/api/auth/local/register — Unauthorized registration</a></li></ul>
+        </div>
+      </div>
       <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
@@ -145,12 +199,6 @@
       <p><a href="mailto:voxlab.services@gmail.com">voxlab.services@gmail.com</a></p>
       <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
-
-    <section id="report-detail">
-      <h2 id="report-title">Report Title</h2>
-      <p id="report-body">This is a placeholder for the report details. Content will be added soon.</p>
-      <footer>© 2025 codenamevenom — All rights reserved</footer>
-    </section>
   </main>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -163,8 +211,14 @@
       if(id==='about'){particleEffect();}
     }
 
-    function toggleFolder(header){let c=header.nextElementSibling;c.style.display=c.style.display==='block'?'none':'block';}
-    document.getElementById('mode-toggle').onclick=function(){document.body.classList.toggle('light');};
+    function toggleFolder(header){
+      let c=header.nextElementSibling;
+      c.style.display=c.style.display==='block'?'none':'block';
+    }
+
+    document.getElementById('mode-toggle').onclick=function(){
+      document.body.classList.toggle('light');
+    };
 
     function particleEffect(){
       const el=document.getElementById('particleText');
@@ -180,22 +234,6 @@
         el.appendChild(span);
       });
       setTimeout(()=>{el.querySelectorAll('span').forEach(s=>{s.style.opacity=1;s.style.filter='blur(0)';});},100);
-    }
-
-    function openReport(id){
-      document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
-      document.getElementById('report-detail').classList.add('active');
-      const titleMap={
-        ssrf:"SSRF — /api/og/statistic",
-        idor1:"IDOR — /api/Log",
-        logic:"Business Logic — Weak Email Validation",
-        access:"Improper Access Control — /register",
-        xss:"DOM XSS — /user/auth/chooseschema",
-        idor2:"IDOR — /api/quotes/[UUID]/",
-        idor3:"IDOR — /v2/apps/[ID]/verification-methods"
-      };
-      document.getElementById('report-title').innerText=titleMap[id]||"Report";
-      document.getElementById('report-body').innerText="Detailed content for "+(titleMap[id]||id)+" will be added here.";
     }
 
     if(document.getElementById('about').classList.contains('active')){
