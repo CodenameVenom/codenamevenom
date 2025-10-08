@@ -13,7 +13,7 @@
       --text:#e6eef6;--light-bg:#f5f5f5;--light-card:#ffffff;--light-text:#222;--light-muted:#666
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex;transition:background .3s,color .3s}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex;transition:background .3s,color .3s;min-height:100vh;flex-direction:row}
     body.light{background:var(--light-bg);color:var(--light-text)}
 
     /* sidebar */
@@ -32,12 +32,20 @@
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    .avatar-symbol{font-size:40px;transition:transform .4s ease, color .4s}
-    .avatar-symbol:hover{transform:scale(1.4) rotate(12deg);color:var(--accent)}
+    /* avatar wow effect */
+    .avatar-wrapper{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .avatar-circle{position:absolute;width:100%;height:100%;border-radius:50%;border:3px solid var(--accent);box-shadow:0 0 20px rgba(239,68,68,0.6);animation:spin 8s linear infinite;}
+    .avatar-symbol{font-size:40px;z-index:2;color:var(--text);transition:transform .4s ease,color .4s}
+    .avatar-wrapper:hover .avatar-symbol{transform:scale(1.5) rotate(20deg);color:var(--accent)}
+    .avatar-wrapper:hover .avatar-circle{animation:spin-fast 2s linear infinite, pulse 1.5s ease-in-out infinite}
+
+    @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    @keyframes spin-fast{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+    @keyframes pulse{0%{box-shadow:0 0 10px rgba(239,68,68,0.5)}50%{box-shadow:0 0 25px rgba(239,68,68,0.9)}100%{box-shadow:0 0 10px rgba(239,68,68,0.5)}}
 
     /* content */
-    #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px)}
-    section{display:none;animation:fade .5s ease}
+    #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh}
+    section{display:none;animation:fade .5s ease;flex:1}
     section.active{display:block}
     @keyframes fade{from{opacity:0}to{opacity:1}}
 
@@ -60,7 +68,7 @@
 
     /* about me */
     #about h2{font-family:Georgia,serif;font-size:26px;color:#e6eef6;margin-bottom:10px}
-    #about p.intro{font-family:Georgia,serif;font-size:18px;color:#9bb0c8;margin-bottom:20px}
+    #about p.intro{font-family:Georgia,serif;font-size:18px;color:#9bb0c8;margin-bottom:20px;min-height:30px}
     #about ul{list-style:disc;margin-left:20px;color:var(--muted)}
     body.light #about h2{color:#222}
 
@@ -68,12 +76,15 @@
     #contact a{color:inherit;font-size:16px;text-decoration:none}
     #contact a:hover{color:var(--accent)}
 
-    footer{text-align:center;color:var(--muted);font-size:13px;padding:20px;margin-top:40px}
+    footer{text-align:center;color:var(--muted);font-size:13px;padding:20px;margin-top:auto}
   </style>
 </head>
 <body>
   <aside id="sidebar">
-    <div class="avatar-symbol">⚚</div>
+    <div class="avatar-wrapper">
+      <div class="avatar-circle"></div>
+      <div class="avatar-symbol">⚚</div>
+    </div>
     <h2>CODENAMEVENOM</h2>
     <p>Cybersecurity Engineer · Offensive Researcher</p>
     <ul>
@@ -103,6 +114,7 @@
         <div class="card" data-aos="fade-up"><h3>IDOR — /api/quotes/[UUID]/</h3><p>Predictable UUID exposed other users' data.</p></div>
         <div class="card" data-aos="fade-up"><h3>IDOR — /v2/apps/[ID]/verification-methods</h3><p>Endpoint leaked verification methods of other users.</p></div>
       </div>
+      <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
     <section id="reports">
@@ -112,11 +124,12 @@
       <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> XSS</div><div class="folder-content"><ul><li><a href="#">/user/auth/chooseschema — DOM-based XSS</a></li></ul></div></div>
       <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Business Logic</div><div class="folder-content"><ul><li><a href="#">Weak Email Validation — Workflow abuse</a></li></ul></div></div>
       <div class="folder"><div class="folder-header" onclick="toggleFolder(this)"><i class="fa fa-folder"></i> Access Control</div><div class="folder-content"><ul><li><a href="#">/api/auth/local/register — Unauthorized registration</a></li></ul></div></div>
+      <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
     <section id="about">
       <h2>About Me</h2>
-      <p class="intro" id="particleText">Driven by curiosity, I explore systems to strengthen their security while continuously learning.</p>
+      <p class="intro" id="particleText"></p>
       <h3>Who am I?</h3>
       <ul>
         <li>Offensive Cybersecurity Researcher</li>
@@ -124,14 +137,14 @@
         <li>eJPT holder, successfully achieved</li>
         <li>Currently preparing for OSCP</li>
       </ul>
+      <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
 
     <section id="contact">
       <h2>Contact</h2>
       <p><a href="mailto:voxlab.services@gmail.com">voxlab.services@gmail.com</a></p>
+      <footer>© 2025 codenamevenom — All rights reserved</footer>
     </section>
-
-    <footer>© 2025 codenamevenom — All rights reserved</footer>
   </main>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -153,16 +166,16 @@
       el.innerHTML='';
       [...text].forEach((ch,i)=>{
         const span=document.createElement('span');
-        span.textContent=ch;
+        span.textContent=ch===' '?'\u00A0':ch;
         span.style.opacity=0;
         span.style.display='inline-block';
-        span.style.transition=`opacity 0.1s ${i*50}ms`;
+        span.style.filter='blur(6px)';
+        span.style.transition=`opacity 0.4s ${i*50}ms, filter 0.4s ${i*50}ms`;
         el.appendChild(span);
       });
-      setTimeout(()=>{el.querySelectorAll('span').forEach(s=>s.style.opacity=1);},100);
+      setTimeout(()=>{el.querySelectorAll('span').forEach(s=>{s.style.opacity=1;s.style.filter='blur(0)';});},100);
     }
 
-    // trigger once if About is the first view
     if(document.getElementById('about').classList.contains('active')){
       particleEffect();
     }
