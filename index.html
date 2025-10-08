@@ -32,12 +32,48 @@
     .circle-icon:hover{color:#fff;background:var(--accent)}
     body.light .circle-icon{background:#ddd;color:#444}
 
-    /* avatar (loop symbol), static by default, animates on hover */
-    .avatar-wrapper{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-    .avatar-circle{position:absolute;width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 50% 50%, rgba(239,68,68,0.35), transparent 70%);border:3px solid var(--accent);box-shadow:0 0 12px rgba(239,68,68,0.4);transition:transform .6s ease, box-shadow .6s ease}
-    .avatar-symbol{z-index:2;font-size:44px;color:var(--text);transition:transform .5s ease, color .5s ease}
-    .avatar-wrapper:hover .avatar-circle{transform:rotate(360deg) scale(1.06);box-shadow:0 0 26px rgba(239,68,68,0.85)}
-    .avatar-wrapper:hover .avatar-symbol{transform:scale(1.28) rotate(18deg);color:var(--accent)}
+    /* avatar (loop symbol), pulse on load then static, animates only on hover */
+    .avatar-wrapper {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .avatar-circle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 50%, rgba(239,68,68,0.35), transparent 70%);
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 12px rgba(239,68,68,0.4);
+      transition: transform .6s ease, box-shadow .6s ease;
+    }
+    .avatar-symbol {
+      z-index: 2;
+      font-size: 44px;
+      color: var(--text);
+      transition: transform .5s ease, color .5s ease;
+      animation: pulse 1.2s ease-out 1; /* pulso iniziale */
+    }
+    .avatar-wrapper:hover .avatar-circle {
+      transform: rotate(360deg) scale(1.06);
+      box-shadow: 0 0 26px rgba(239,68,68,0.85);
+    }
+    .avatar-wrapper:hover .avatar-symbol {
+      transform: scale(1.28) rotate(18deg);
+      color: var(--accent);
+      animation: none; /* evita ripetizione */
+    }
+    @keyframes pulse {
+      0%   { transform: scale(0.9); opacity: 0.7; }
+      50%  { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
 
     /* content */
     #content{margin-left:260px;flex:1;padding:30px;max-width:calc(100% - 260px);display:flex;flex-direction:column;min-height:100vh}
