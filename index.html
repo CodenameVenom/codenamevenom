@@ -340,16 +340,15 @@
     idor3: "IDOR — /v2/apps/[ID]/verification-methods"
   };
 
-  // riferimenti fissi
+  // Aggiorna titolo SEMPRE
   const titleEl = document.getElementById('report-title');
   const bodyEl  = document.getElementById('report-body');
-
-  if(titleEl) titleEl.textContent = titleMap[id] || "Report";
-
-  // SSRF: se il tuo HTML SSRF è già statico dentro #report-body, lascialo così
-  else if (id === 'ssrf') {
+  if (titleEl) titleEl.textContent = titleMap[id] || "Report";
   if (!bodyEl) return false;
-  const reportHtml = `
+
+  // Contenuto dinamico
+  if (id === 'ssrf') {
+    const reportHtml = `
     <h1>SSRF — /api/og/statistic</h1>
     <p><strong>Summary:</strong> A server-side request forgery (SSRF) was discovered in an unauthenticated endpoint responsible for generating Open Graph images. The endpoint allowed arbitrary user-supplied URLs via the <code>image</code> GET parameter, which were fetched server-side and returned as a PNG. Due to the lack of input validation and network egress control, this resulted in a full SSRF primitive with deep internal reconnaissance capabilities.</p>
 
@@ -406,7 +405,7 @@
 
   
   else if (id === 'idor1') {
-    if (!bodyEl) return false;
+    
     const reportHtml = `
 <div id="post-wrapper">
   <h1>IDOR Exploitation: Breaking Access Control in Action Logging</h1>
@@ -515,7 +514,7 @@ if r.status_code == 200 and "true" in r.text.lower():
   }
   // --- template placeholder per altri report ---
     else if (id === 'logic') {
-    if (!bodyEl) return false;
+    
     const reportHtml = `<!-- START REPORT HTML -->
 <!-- START REPORT HTML (anonymized, styled for Prism) -->
 <h2>Weak Email Validation & Lack of Anti-Automation Controls (Business Logic Flaw)</h2>
@@ -641,8 +640,7 @@ for p in payloads:
 
 
   // fallback per gli altri report (placeholder)
-  else {
-    if (!bodyEl) return false;
+   else {
     bodyEl.innerHTML = `
       <div style="max-width:900px;margin:0 auto;padding:20px;">
         <h3>${titleMap[id] || id}</h3>
@@ -651,7 +649,7 @@ for p in payloads:
     `;
   }
 
-  // scroll top per visibilità
+  // scroll top
   window.scrollTo({ top: 0, behavior: 'smooth' });
   return false;
 }
