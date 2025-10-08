@@ -280,8 +280,8 @@
     }
 
     function openReport(id){
-  // show report-detail
-  document.querySelectorAll('main section').forEach(s=>s.classList.remove('active'));
+  // Nascondi tutte le sezioni e mostra report-detail
+  document.querySelectorAll('main section').forEach(s => s.classList.remove('active'));
   const reportSection = document.getElementById('report-detail');
   if(!reportSection) return false;
   reportSection.classList.add('active');
@@ -296,34 +296,143 @@
     idor3: "IDOR — /v2/apps/[ID]/verification-methods"
   };
 
-  // aggiorna titolo: preferisci #report-title se esiste, altrimenti il primo h2 dentro report-detail
+  // elementi di riferimento (una volta sola)
   const titleEl = document.getElementById('report-title') || reportSection.querySelector('h2');
+  const bodyEl  = document.getElementById('report-body')  || reportSection.querySelector('div');
+
+  // aggiorna titolo se presente
   if(titleEl) titleEl.textContent = titleMap[id] || "Report";
 
-  // Se il report SSRF è già presente staticamente, NON sovrascrivere il body.
-  // Cerchiamo #report-body; se non esiste o non è SSRF, inseriamo placeholder per gli altri id.
-  const bodyEl = document.getElementById('report-body') || reportSection.querySelector('div, p, section');
-
+  // --- comportamento per SSRF: lascia il contenuto statico già inserito ---
   if(id === 'ssrf'){
-    // leave existing static content as-is (do not overwrite)
-    // but if you do want to force-insert dynamic content, uncomment and set innerHTML here.
-  } else {
-    // inserisci placeholder dinamico per gli altri report
+    // non sovrascrivere il body: il markup SSRF è già nel DOM
+  }
+  // --- IDOR full post injection ---
+  else if (id === 'idor1') {
+    if (bodyEl) {
+      bodyEl.innerHTML = `
+<div id="post-wrapper">
+  <h1>IDOR Exploitation: Breaking Access Control in Action Logging</h1>
+  <div class="post-meta text-muted">
+    <span>Posted in <em>Offensive Security Research</em> · CVSS: <strong>High</strong></span>
+  </div>
+
+  <div class="post-content">
+    <blockquote>
+      <p>
+        This article walks through a real-world penetration test finding: an Insecure Direct Object Reference (IDOR) in an action logging endpoint. 
+        The case study highlights the importance of thorough mapping during pre-engagement, exploration of business logic paths, and the use of custom Python tooling to validate impact without touching third-party data.
+      </p>
+    </blockquote>
+
+    <h2>Pre-Engagement: Mapping the Landscape</h2>
+    <p>
+      Every serious penetration test begins with reconnaissance. Before testing functionality, I invested time in mapping the endpoints exposed by the target system, comparing traffic flows against baseline expectations. 
+      This mapping phase was crucial: it revealed patterns in action logging calls, including parameters that appeared sequential and predictable.
+    </p>
+
+    <h2>Exploration and Discovery</h2>
+    <p>
+      During exploration, I identified a logging endpoint responsible for tracking user actions. 
+      The request body included an <code>id</code> parameter, which appeared to reference user membership or session identifiers. 
+      Surprisingly, the server accepted arbitrary values without checking whether they belonged to the authenticated account.
+    </p>
+
+    <h2>Endpoint Behavior</h2>
+    <pre><code>
+POST /api/log?actionTag=send-invite
+Body:
+{
+  "id": "100245",
+  "actionTag": "send-invite",
+  "metadata": { "origin": "personalArea" }
+}
+    </code></pre>
+
+    <p>
+      Regardless of ownership, the backend responded with:
+    </p>
+    <pre><code>
+HTTP/2 200 OK
+true
+    </code></pre>
+
+    <p>
+      Non-authenticated requests correctly returned <code>403 Forbidden</code>, but authenticated requests with arbitrary IDs were always accepted.
+    </p>
+
+    <h2>Custom Python Tooling</h2>
+    <p>
+      To test this in a controlled and ethical manner, I developed a custom Python script. 
+      The script attached to the browser via the Chrome DevTools Protocol, extracted my own valid JWT token and session cookies, and replayed the request sequence with manipulated IDs. 
+      Instead of accessing or modifying third-party data, the script merely checked for <code>true</code> vs <code>false</code> responses. 
+      This approach made it possible to systematically confirm the vulnerability while staying within scope and policy.
+    </p>
+
+    <pre><code class="language-python">
+if r.status_code == 200 and "true" in r.text.lower():
+    print(f"[VULNERABLE] id={test_id} accepted")
+    </code></pre>
+
+    <h2>Escalation Through Enumeration</h2>
+    <p>
+      Once the flaw was confirmed, I demonstrated how enumeration could escalate the issue. 
+      By iterating over sequential <code>id</code> values, any logged-in user could inject spoofed actions tied to other accounts. 
+      This does not expose personal data directly, but it pollutes the system’s business logic, audit trails, and potential reward mechanisms.
+    </p>
+
+    <h2>Business Impact</h2>
+    <ul>
+      <li>Audit records can be artificially manipulated</li>
+      <li>Referral or incentive systems can be fraudulently triggered</li>
+      <li>Authorization boundaries are broken at the API level</li>
+      <li>Large-scale automated exploitation possible via ID enumeration</li>
+    </ul>
+
+    <h2>Why This Matters</h2>
+    <p>
+      Even without sensitive data leakage, this IDOR is significant. 
+      Security is not only about protecting confidentiality but also about ensuring the integrity of business workflows. 
+      Allowing unauthorized users to influence system logs or rewards undermines trust in the platform itself.
+    </p>
+
+    <h2>Mitigation Recommendations</h2>
+    <ul>
+      <li>Enforce strict server-side ownership validation for all identifiers</li>
+      <li>Reject mismatched <code>id</code> values with <code>403 Forbidden</code></li>
+      <li>Tie resource validation directly to authenticated user session IDs</li>
+      <li>Apply defense-in-depth: log anomalies and enforce rate limits on action logging</li>
+    </ul>
+
+    <h2>Ethical Note</h2>
+    <p>
+      The testing was performed responsibly using my own account and credentials only. 
+      No third-party data was accessed, extracted, or altered. 
+      The purpose of this exploration was to highlight the weakness in access control logic and demonstrate safe validation practices.
+    </p>
+  </div>
+</div>
+    `;
+  }
+}
+  // --- template placeholder per altri report ---
+  else {
     if(bodyEl){
       bodyEl.innerHTML = `
         <div style="max-width:900px;margin:0 auto;padding:20px;">
           <h2>${titleMap[id] || id}</h2>
           <p>Detailed content for <strong>${titleMap[id] || id}</strong> will be added here.</p>
-          <p style="color:var(--muted);font-size:13px;margin-top:12px;">Placeholder — replace with full report (Summary, PoC, Impact, Remediation).</p>
+          <p style="color:var(--muted);font-size:13px;margin-top:12px;">Placeholder — replace with full report.</p>
         </div>
       `;
     }
   }
 
-  // scroll top for visibility
+  // scroll top
   window.scrollTo({ top: 0, behavior: 'smooth' });
   return false;
 }
+
 
 
     // Initialize About text if About is default (not the case now, but safe)
