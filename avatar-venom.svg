@@ -1,0 +1,61 @@
+<!--?xml version="1.0" encoding="utf-8"?-->
+<!-- avatar-venom.svg
+     Modern stylized "venom / snake" emblem — intended for use as avatar.
+     Save as avatar-venom.svg and place in your project (e.g. /assets/avatar-venom.svg).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-labelledby="title desc">
+  <title id="title">CodenameVenom emblem</title>
+  <desc id="desc">Stylized snake emblem inside a ring</desc>
+
+  <defs>
+    <linearGradient id="gradA" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff7a7a"></stop>
+      <stop offset="1" stop-color="#ef4444"></stop>
+    </linearGradient>
+    <radialGradient id="gGlow" cx="40%" cy="30%" r="80%">
+      <stop offset="0" stop-color="rgba(239,68,68,0.35)"></stop>
+      <stop offset="1" stop-color="rgba(239,68,68,0)"></stop>
+    </radialGradient>
+    <filter id="drop" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"></feGaussianBlur>
+      <feOffset in="b" dx="0" dy="6" result="o"></feOffset>
+      <feMerge>
+        <feMergeNode in="o"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- decorative glow ring -->
+  <circle cx="60" cy="60" r="46" fill="url(#gGlow)"></circle>
+  <circle cx="60" cy="60" r="46" stroke="url(#gradA)" stroke-width="3" fill="none"></circle>
+
+  <g transform="translate(0,2)" filter="url(#drop)">
+    <!-- body arc -->
+    <path d="M34 74
+             C44 62, 76 62, 86 74
+             C86 74, 78 68, 66 68
+             C54 68, 46 74, 34 74 Z" fill="#0b0f12" stroke="url(#gradA)" stroke-width="1.8"></path>
+
+    <!-- stylized head -->
+    <path d="M62 36
+             C72 36, 78 46, 74 54
+             C70 62, 58 66, 52 62
+             C48 60, 50 50, 62 36 Z" fill="#0b0f12" stroke="url(#gradA)" stroke-width="1.6"></path>
+
+    <!-- eye -->
+    <circle cx="68" cy="48" r="2.4" fill="#ffd7d7"></circle>
+
+    <!-- fang hints -->
+    <path d="M56 64 L58 70 L60 64" stroke="#ffd7d7" stroke-width="1.2" stroke-linecap="round" fill="none"></path>
+  </g>
+
+  <!-- inner glyph (abstract V) -->
+  <path d="M44 44 L60 62 L76 44" stroke="rgba(255,255,255,0.12)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"></path>
+
+  <!-- subtle hatch -->
+  <g opacity="0.06" transform="translate(0,0)">
+    <path d="M40 88 L80 88" stroke="#fff" stroke-width="1" stroke-linecap="round"></path>
+    <path d="M38 82 L82 82" stroke="#fff" stroke-width="1" stroke-linecap="round"></path>
+  </g>
+</svg>
