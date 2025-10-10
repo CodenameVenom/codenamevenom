@@ -190,6 +190,16 @@
   .avatar-wrapper:hover .avatar-circle,
   .avatar-wrapper:hover .avatar-symbol { transform: none !important; box-shadow: 0 0 12px rgba(239,68,68,0.4) !important; }
 }
+    .avatar-wrapper {
+  border: none !important;
+}
+.avatar-wrapper::before,
+.avatar-wrapper::after {
+  content: none !important;
+  border: none !important;
+  background: none !important;
+}
+
 
 /* ---------- MOBILE: sidebar slide-in (GoDiego/Chirpy style) ---------- */
 @media (max-width: 880px) {
@@ -279,6 +289,17 @@
   }
   .card { padding: 16px; }
 }
+    @media (max-width: 880px) {
+  #sidebar {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* scroll fluido su iOS */
+  }
+
+  .sidebar-bottom {
+    margin-top: auto; /* spinge i bottoni sempre in fondo */
+  }
+}
+
 
 
 
