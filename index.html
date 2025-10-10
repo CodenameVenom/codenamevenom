@@ -149,22 +149,15 @@
 @media (max-width: 880px) {
   /* Topbar */
   #sidebar {
-  height: 64px;
-  overflow: visible;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 64px;          /* fissa la barra */
+  height: 64px;           /* SOLO topbar */
   width: 100%;
-  padding: calc(env(safe-area-inset-top, 0px) + 8px) 14px 8px 14px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.45);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  background: #0f1620;    /* opaco, niente trasparenza */
+  overflow: visible;      /* permette al menu di uscire */
   z-index: 1200;
-  background: #0f1620;
-  overflow: visible;      /* permette al menu di uscire fuori */
 }
 
 
@@ -172,8 +165,7 @@
   /* Put content below topbar */
   #content {
   margin-left: 0 !important;
-  padding: 90px 16px 24px 16px; /* spinge contenuto sotto la barra */
-  max-width: 100% !important;
+  padding-top: 80px; /* sotto la barra */
 }
 
 
@@ -211,22 +203,22 @@
 #sidebar ul {
   display: none;
   position: absolute;
-  top: 64px;             /* appena sotto la barra */
+  top: 64px;   /* subito sotto la barra */
   left: 10px;
   right: 10px;
-  background: rgba(15,22,32,0.85); /* semi-trasparente stile glass */
+  background: rgba(15,22,32,0.85); /* liquid glass */
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border-radius: 14px;
   padding: 12px 16px;
+  border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-  z-index: 2000;
-  animation: dropdown .3s ease forwards;
+  z-index: 2001;
 }
 
 #sidebar.open ul {
   display: block;
 }
+
 
 @keyframes dropdown {
   0% { transform: translateY(-12px); opacity:0; }
