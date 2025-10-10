@@ -164,6 +164,17 @@
     min-height: unset !important; /* <-- fix per evitare overlay full screen */
   }
 
+  #sidebar.open {
+  transform: translateX(0);
+}
+
+@media (max-width: 880px) {
+  #sidebar {
+    transform: translateX(-260px);
+    transition: transform .3s ease;
+  }
+}
+
   /* Contenuto sotto la barra */
   #content {
     margin-left: 0 !important;
@@ -498,6 +509,10 @@ body.light .folder{ background:var(--light-card); }
 </head>
 <body>
   <aside id="sidebar">
+    <button id="sidebar-trigger" class="menu-toggle" aria-label="Toggle menu">
+      <span class="hamburger"></span>
+   </button>
+
   <!-- AVATAR -->
   <div class="avatar-wrapper" title="codenamevenom" tabindex="0" aria-label="CodenameVenom avatar">
     <div class="avatar-circle" aria-hidden="true"></div>
@@ -1301,77 +1316,16 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
 
   
 <script>
-(function(){
-  const sidebar = document.getElementById('sidebar');
-  const mobileMenu = document.getElementById('mobileMenu');
-  if (!sidebar || !mobileMenu) return;
+  document.addEventListener("DOMContentLoaded", function() {
+    const sidebarTrigger = document.getElementById("sidebar-trigger");
+    const sidebar = document.getElementById("sidebar");
 
-  // rimuovi eventuale pulsante doppio
-  const prev = document.getElementById('menu-toggle');
-  if (prev) prev.remove();
-
-  // crea pulsante hamburger
-  const btn = document.createElement('button');
-  btn.id = 'menu-toggle';
-  btn.type = 'button';
-  btn.setAttribute('aria-expanded', 'false');
-  btn.setAttribute('aria-label', 'Toggle menu');
-  btn.className = 'menu-toggle';
-  btn.innerHTML = '<span class="hamburger" aria-hidden="true"></span>';
-
-  // inseriscilo nella sidebar
-  const avatar = sidebar.querySelector('.avatar-wrapper');
-  if (avatar) {
-    sidebar.insertBefore(btn, avatar.nextSibling);
-  } else {
-    sidebar.insertBefore(btn, sidebar.firstChild);
-  }
-
-  // logica apertura/chiusura
-  function openMenu() {
-    mobileMenu.classList.add('show');
-    btn.setAttribute('aria-expanded', 'true');
-    document.addEventListener('click', outsideHandler);
-    document.addEventListener('keydown', escHandler);
-  }
-
-  function closeMenu() {
-    mobileMenu.classList.remove('show');
-    btn.setAttribute('aria-expanded', 'false');
-    document.removeEventListener('click', outsideHandler);
-    document.removeEventListener('keydown', escHandler);
-  }
-
-  function toggleMenu(e) {
-    e.stopPropagation();
-    if (mobileMenu.classList.contains('show')) closeMenu();
-    else openMenu();
-  }
-
-  function outsideHandler(e) {
-    if (!sidebar.contains(e.target) && !mobileMenu.contains(e.target)) {
-      closeMenu();
-    }
-  }
-
-  function escHandler(e) {
-    if (e.key === 'Escape') closeMenu();
-  }
-
-  btn.addEventListener('click', toggleMenu);
-
-  // all’avvio: menu nascosto
-  mobileMenu.classList.remove('show');
-
-  // reset quando si ridimensiona
-  window.addEventListener('resize', () => {
-    if (window.matchMedia('(min-width:881px)').matches) {
-      mobileMenu.classList.remove('show');
-      btn.setAttribute('aria-expanded', 'false');
-    }
+    sidebarTrigger.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
   });
-})();
 </script>
+
 
 
 
