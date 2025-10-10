@@ -161,12 +161,14 @@
     justify-content: space-between;
     padding: 0 14px;
     z-index: 1200;
+    min-height: unset !important; /* <-- fix per evitare overlay full screen */
   }
 
   /* Contenuto sotto la barra */
   #content {
     margin-left: 0 !important;
-    padding-top: 80px; /* sotto la barra */
+    padding-top: 80px; /* spazio sotto la topbar */
+    max-width: 100% !important;
   }
 
   /* nascondi avatar su mobile */
@@ -174,7 +176,7 @@
 
   /* nascondi titolo e sottotitolo */
   #sidebar h2, 
-  #sidebar p { display:none; }
+  #sidebar p { display:none !important; }
 
   /* bottone hamburger */
   .menu-toggle {
@@ -216,7 +218,7 @@
     top: 64px;   /* subito sotto la barra */
     left: 10px;
     right: 10px;
-    background: rgba(15,22,32,0.85); /* liquid glass */
+    background: rgba(15,22,32,0.85); /* effetto liquid glass */
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
     padding: 12px 16px;
@@ -1307,7 +1309,7 @@ if (avatar) {
 
 
   // Utility: find sidebar list
-  const sidebarList = sidebar.querySelector('ul');
+  const sidebarList = document.getElementById('mobileMenu');
 
   // Open/close logic
   function openSidebar() {
