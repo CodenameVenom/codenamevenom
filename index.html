@@ -48,6 +48,17 @@
     padding-top: 80px !important;
   }
 }
+    @media (max-width: 880px) {
+  #topbar .logo-text {
+    flex: 1;               /* occupa lo spazio centrale */
+    text-align: center;    /* centrato in mezzo */
+    font-size: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+}
+
 
 
     body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;color:var(--text);background:var(--bg);overflow-x:hidden;display:flex;transition:background .3s,color .3s;min-height:100vh;flex-direction:row}
@@ -1314,6 +1325,23 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
     });
   });
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    new Typed("#typed-hero", {
+      strings: [
+        "Independent Offensive Security Researcher",
+        "STEM Graduate",
+        "Exploring vulnerabilities to strengthen systems"
+      ],
+      typeSpeed: 50,
+      backSpeed: 25,
+      backDelay: 2000,
+      loop: true
+    });
+  });
+</script>
+
 
 
 
