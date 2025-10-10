@@ -58,6 +58,12 @@
     color: var(--text);
   }
 }
+    #topbar.shrink {
+  height: 50px;
+  background: rgba(15,22,32,0.95);
+  transition: all 0.3s ease;
+}
+
 
 
 
@@ -1341,16 +1347,16 @@ GET https://&lt;api-host&gt;/api/quotes/&lt;uuid&gt;
     });
   });
 </script>
-
-
-
-
-
-
-
-
-
-
+<script>
+  window.addEventListener("scroll", () => {
+    const topbar = document.getElementById("topbar");
+    if (window.scrollY > 50) {
+      topbar.classList.add("shrink");
+    } else {
+      topbar.classList.remove("shrink");
+    }
+  });
+</script>
 </body>
-
 </html>
+
