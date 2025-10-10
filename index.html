@@ -145,152 +145,95 @@
   .avatar-wrapper:hover .avatar-symbol { transform: none !important; box-shadow: 0 0 12px rgba(239,68,68,0.4) !important; }
 }
 
-/* ---------- MOBILE: sidebar -> topbar (REFINED, TOUCH-FRIENDLY) ---------- */
+/* ---------- MOBILE: sidebar slide-in (GoDiego/Chirpy style) ---------- */
 @media (max-width: 880px) {
-  /* Topbar compatta */
+  /* Sidebar nascosta fuori schermo */
   #sidebar {
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;           /* SOLO topbar */
-    width: 100%;
+    left: -260px;            /* parte nascosta */
+    width: 260px;
+    height: 100%;
     background: #0f1620;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 14px;
-    z-index: 1200;
-    min-height: unset !important; /* <-- fix per evitare overlay full screen */
+    box-shadow: 4px 0 20px rgba(0,0,0,0.6);
+    transition: left .3s ease;
+    z-index: 2000;
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
+  /* Sidebar visibile quando ha la classe .open */
   #sidebar.open {
-  transform: translateX(0);
-}
-
-@media (max-width: 880px) {
-  #sidebar {
-    transform: translateX(-260px);
-    transition: transform .3s ease;
+    left: 0;
   }
-}
 
-  /* Contenuto sotto la barra */
+  /* contenuto principale: niente margin-left su mobile */
   #content {
     margin-left: 0 !important;
-    padding-top: 80px; /* spazio sotto la topbar */
     max-width: 100% !important;
+    padding-top: 20px;
   }
 
-  /* nascondi avatar su mobile */
-  .avatar-wrapper { display: none !important; }
-
-  /* nascondi titolo e sottotitolo */
-  #sidebar h2, 
-  #sidebar p { display:none !important; }
+  /* nascondi avatar/titolo/sottotitolo su mobile */
+  .avatar-wrapper,
+  #sidebar h2,
+  #sidebar p {
+    display: none !important;
+  }
 
   /* bottone hamburger */
   .menu-toggle {
-    width:48px;
-    height:48px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border-radius:10px;
-    background:transparent;
-    border:0;
-    cursor:pointer;
-    color:var(--text);
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: rgba(15,22,32,0.9);
+    color: var(--text);
+    cursor: pointer;
+    z-index: 2100;
   }
   .menu-toggle .hamburger {
-    width:22px; 
-    height:2px; 
-    position:relative; 
-    background:currentColor; 
-    border-radius:2px;
+    width: 22px;
+    height: 2px;
+    position: relative;
+    background: currentColor;
+    border-radius: 2px;
   }
   .menu-toggle .hamburger::before,
   .menu-toggle .hamburger::after {
-    content:""; 
-    position:absolute; 
-    left:0; 
-    width:100%; 
-    height:2px; 
-    background:currentColor; 
-    border-radius:2px;
-  }
-  .menu-toggle .hamburger::before { top:-7px; }
-  .menu-toggle .hamburger::after  { top:7px; }
-
-  /* MENU MOBILE DROPDOWN */
-  #mobileMenu {
-    display: none;
+    content: "";
     position: absolute;
-    top: 64px;   /* subito sotto la barra */
-    left: 10px;
-    right: 10px;
-    background: rgba(15,22,32,0.85); /* effetto liquid glass */
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    padding: 12px 16px;
-    border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-    z-index: 2001;
-    animation: dropdown .3s ease forwards;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    border-radius: 2px;
   }
-
-  #mobileMenu.show { display: block; }
-
-  @keyframes dropdown {
-    0% { transform: translateY(-12px); opacity:0; }
-    100% { transform: translateY(0); opacity:1; }
-  }
-
-  /* link touch-friendly */
-  #mobileMenu li a {
-  display:block;
-  padding:14px;
-  border-radius:10px;
-  font-size:16px;
-  color: var(--text);   /* <--- aggiungi questo */
-  text-decoration: none;
-}
-
-  #mobileMenu li a:hover {
-    background: rgba(239,68,68,0.12);
-    color: var(--accent);
-  }
+  .menu-toggle .hamburger::before { top: -7px; }
+  .menu-toggle .hamburger::after  { top: 7px; }
 
   /* cards e folder full width */
   .folder, .card { 
     max-width: 100%; 
-    border-radius:12px; 
+    border-radius: 12px; 
   }
 
   /* spaziature compatte */
   .stack { 
-    gap:18px; 
-    margin-top:18px; 
-    padding:0 8px; 
+    gap: 18px; 
+    margin-top: 18px; 
+    padding: 0 8px; 
   }
-  .card { padding:16px; }
+  .card { padding: 16px; }
 }
 
-@media (max-width: 880px) {
-  #mobileMenu {
-    position: fixed;   /* non absolute */
-    top: 64px;         /* parte sotto la barra */
-    left: 0;
-    right: 0;
-    background: rgba(15,22,32,0.95);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    padding: 12px 16px;
-    border-radius: 0 0 14px 14px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-    z-index: 1100;    /* più basso della barra */
-  }
-}
 
 
 
@@ -538,13 +481,7 @@ body.light .folder{ background:var(--light-card); }
   </div>
 </aside>
 
-<!-- MENU MOBILE DROPDOWN (usato solo su mobile) -->
-<ul id="mobileMenu">
-  <li><a href="#home" onclick="return showSection('home')"><i class="fa fa-home"></i> Home</a></li>
-  <li><a href="#reports" onclick="return showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
-  <li><a href="#about" onclick="return showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
-  <li><a href="#contact" onclick="return showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
-</ul>
+
 
 
   <main id="content">
