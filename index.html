@@ -147,40 +147,37 @@
 
 /* ---------- MOBILE: sidebar -> topbar (REFINED, TOUCH-FRIENDLY) ---------- */
 @media (max-width: 880px) {
-  /* Topbar */
+  /* Topbar compatta */
   #sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;           /* SOLO topbar */
-  width: 100%;
-  background: #0f1620;    /* opaco, niente trasparenza */
-  overflow: visible;      /* permette al menu di uscire */
-  z-index: 1200;
-}
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;           /* SOLO topbar */
+    width: 100%;
+    background: #0f1620;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    z-index: 1200;
+  }
 
-
-
-  /* Put content below topbar */
+  /* Contenuto sotto la barra */
   #content {
-  margin-left: 0 !important;
-  padding-top: 80px; /* sotto la barra */
-}
-
-
+    margin-left: 0 !important;
+    padding-top: 80px; /* sotto la barra */
+  }
 
   /* nascondi avatar su mobile */
-  .avatar-wrapper {
-  display: none !important;
-}
+  .avatar-wrapper { display: none !important; }
 
+  /* nascondi titolo e sottotitolo */
+  #sidebar h2, 
+  #sidebar p { display:none; }
 
-  /* hide name & subtitle on topbar */
-  #sidebar h2, #sidebar p { display:none; }
-
-  /* hamburger button (touch size) */
-  .menu-toggle{
+  /* bottone hamburger */
+  .menu-toggle {
     width:48px;
     height:48px;
     display:flex;
@@ -192,57 +189,74 @@
     cursor:pointer;
     color:var(--text);
   }
-  .menu-toggle .hamburger { width:22px; height:2px; position:relative; background:currentColor; border-radius:2px; }
+  .menu-toggle .hamburger {
+    width:22px; 
+    height:2px; 
+    position:relative; 
+    background:currentColor; 
+    border-radius:2px;
+  }
   .menu-toggle .hamburger::before,
-  .menu-toggle .hamburger::after { content:""; position:absolute; left:0; width:100%; height:2px; background:currentColor; border-radius:2px; }
+  .menu-toggle .hamburger::after {
+    content:""; 
+    position:absolute; 
+    left:0; 
+    width:100%; 
+    height:2px; 
+    background:currentColor; 
+    border-radius:2px;
+  }
   .menu-toggle .hamburger::before { top:-7px; }
-  .menu-toggle .hamburger::after { top:7px; }
+  .menu-toggle .hamburger::after  { top:7px; }
 
-    /* Drawer compatto sotto la topbar */
-  /* Menu a tendina stile iOS glass */
-#sidebar ul {
-  display: none;
-  position: absolute;
-  top: 64px;   /* subito sotto la barra */
-  left: 10px;
-  right: 10px;
-  background: rgba(15,22,32,0.85); /* liquid glass */
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  padding: 12px 16px;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-  z-index: 2001;
-}
+  /* MENU MOBILE DROPDOWN */
+  #mobileMenu {
+    display: none;
+    position: absolute;
+    top: 64px;   /* subito sotto la barra */
+    left: 10px;
+    right: 10px;
+    background: rgba(15,22,32,0.85); /* liquid glass */
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    padding: 12px 16px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    z-index: 2001;
+    animation: dropdown .3s ease forwards;
+  }
 
-#sidebar.open ul {
-  display: block;
-}
+  #mobileMenu.show { display: block; }
 
+  @keyframes dropdown {
+    0% { transform: translateY(-12px); opacity:0; }
+    100% { transform: translateY(0); opacity:1; }
+  }
 
-@keyframes dropdown {
-  0% { transform: translateY(-12px); opacity:0; }
-  100% { transform: translateY(0); opacity:1; }
-}
+  /* link touch-friendly */
+  #mobileMenu li a {
+    display:block;
+    padding:14px;
+    border-radius:10px;
+    font-size:16px;
+  }
+  #mobileMenu li a:hover {
+    background: rgba(239,68,68,0.12);
+    color: var(--accent);
+  }
 
-/* link touch-friendly */
-#sidebar ul li a {
-  display:block;
-  padding:14px;
-  border-radius:10px;
-  font-size:16px;
-}
-#sidebar ul li a:hover {
-  background: rgba(239,68,68,0.12);
-  color: var(--accent);
-}
+  /* cards e folder full width */
+  .folder, .card { 
+    max-width: 100%; 
+    border-radius:12px; 
+  }
 
-
-  /* ensure folder content in reports page is visible and full-width */
-  .folder, .card { max-width: 100%; border-radius:12px; }
-
-  /* smaller headings and spacing for mobile */
-  .stack { gap:18px; margin-top:18px; padding:0 8px; }
+  /* spaziature compatte */
+  .stack { 
+    gap:18px; 
+    margin-top:18px; 
+    padding:0 8px; 
+  }
   .card { padding:16px; }
 }
 
@@ -462,33 +476,39 @@ body.light .folder{ background:var(--light-card); }
 </head>
 <body>
   <aside id="sidebar">
-    <!-- START: avatar (replace the old avatar-wrapper block) -->
-<!-- AVATAR: single-ring emblem -->
-<div class="avatar-wrapper" title="codenamevenom" tabindex="0" aria-label="CodenameVenom avatar">
-  <div class="avatar-circle" aria-hidden="true"></div>
-  <div class="avatar-symbol" aria-hidden="false">
-    <!-- img path: use repo root or assets/ as appropriate -->
-    <img src="avatar-venom.svg" alt="CodenameVenom emblem" />
-    <!-- If you prefer inline SVG, paste it here instead of <img> -->
-  </div>
-</div>
-
-
-<!-- END: avatar -->
-
-    <h2>CODENAMEVENOM</h2>
-    <p>Cybersecurity Engineer · Offensive Researcher</p>
-    <ul>
-      <li><a href="#home" onclick="return showSection('home')"><i class="fa fa-home"></i> Home</a></li>
-      <li><a href="#reports" onclick="return showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
-      <li><a href="#about" onclick="return showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
-      <li><a href="#contact" onclick="return showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
-    </ul>
-    <div class="sidebar-bottom">
-      <div id="mode-toggle" class="circle-icon" title="Toggle theme"><i class="fa fa-moon"></i></div>
-      <a href="mailto:voxlab.services@gmail.com" class="circle-icon" title="Email"><i class="fa fa-envelope"></i></a>
+  <!-- AVATAR -->
+  <div class="avatar-wrapper" title="codenamevenom" tabindex="0" aria-label="CodenameVenom avatar">
+    <div class="avatar-circle" aria-hidden="true"></div>
+    <div class="avatar-symbol" aria-hidden="false">
+      <img src="avatar-venom.svg" alt="CodenameVenom emblem" />
     </div>
-  </aside>
+  </div>
+
+  <h2>CODENAMEVENOM</h2>
+  <p>Cybersecurity Engineer · Offensive Researcher</p>
+
+  <!-- MENU DESKTOP -->
+  <ul class="desktop-menu">
+    <li><a href="#home" onclick="return showSection('home')"><i class="fa fa-home"></i> Home</a></li>
+    <li><a href="#reports" onclick="return showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
+    <li><a href="#about" onclick="return showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
+    <li><a href="#contact" onclick="return showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
+  </ul>
+
+  <div class="sidebar-bottom">
+    <div id="mode-toggle" class="circle-icon" title="Toggle theme"><i class="fa fa-moon"></i></div>
+    <a href="mailto:voxlab.services@gmail.com" class="circle-icon" title="Email"><i class="fa fa-envelope"></i></a>
+  </div>
+</aside>
+
+<!-- MENU MOBILE DROPDOWN (usato solo su mobile) -->
+<ul id="mobileMenu">
+  <li><a href="#home" onclick="return showSection('home')"><i class="fa fa-home"></i> Home</a></li>
+  <li><a href="#reports" onclick="return showSection('reports')"><i class="fa fa-list"></i> Reports</a></li>
+  <li><a href="#about" onclick="return showSection('about')"><i class="fa fa-user"></i> About Me</a></li>
+  <li><a href="#contact" onclick="return showSection('contact')"><i class="fa fa-envelope"></i> Contact</a></li>
+</ul>
+
 
   <main id="content">
     <section id="home" class="active">
