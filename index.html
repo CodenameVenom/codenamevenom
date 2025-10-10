@@ -2,11 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0f12">
+
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>codenamevenom — Security Portfolio</title>
   <meta name="description" content="Technical portfolio of accepted and paid security reports — codenamevenom" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style">
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  
   <style>
     :root{
       --bg:#0b0f12;--card:#0f1620;--muted:#98a0aa;--accent:#ef4444;--glass:rgba(255,255,255,0.03);
@@ -137,114 +144,96 @@
   .avatar-wrapper:hover .avatar-symbol { transform: none !important; box-shadow: 0 0 12px rgba(239,68,68,0.4) !important; }
 }
 
-/* ---------- MOBILE: sidebar to topbar + refined hamburger ---------- */
+/* ---------- MOBILE: sidebar -> topbar (REFINED, TOUCH-FRIENDLY) ---------- */
 @media (max-width: 880px) {
-  /* Sidebar diventa barra superiore */
-  #sidebar {
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    box-shadow: none;
-    z-index: 100;
-  }
-
-  /* Layout verticale: sidebar sopra, contenuto sotto */
-  body { flex-direction: column; }
-
-  /* Contenuto prende tutta la larghezza */
-  #content {
-    margin-left: 0 !important;
-    max-width: 100%;
-    padding: 18px;
-  }
-
-  /* Avatar ridotto */
-  .avatar-wrapper { 
-    width: 72px; 
-    height: 72px; 
-    margin-bottom: 0; 
-  }
-  .avatar-symbol { 
-    width: 56px; 
-    height: 56px; 
-  }
-  .avatar-symbol img, 
-  .avatar-symbol svg { 
-    width: 100%; 
-    height: 100%; 
-  }
-
-  /* Nascondi titolo e sottotitolo per risparmiare spazio */
-  #sidebar h2, 
-  #sidebar p { 
-    display: none; 
-  }
-
-  /* Bottone hamburger */
-  .menu-toggle {
-    background: transparent;
-    border: 0;
-    cursor: pointer;
-    padding: 6px;
-    margin-right: auto; /* lo mette a sinistra */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 150;
-  }
-  .menu-toggle .hamburger {
-    width: 20px;
-    height: 2px;
-    background: currentColor;
-    position: relative;
-    border-radius: 2px;
-  }
-  .menu-toggle .hamburger::before,
-  .menu-toggle .hamburger::after {
-    content: "";
-    position: absolute;
+  /* Topbar */
+  #sidebar{
+    position: fixed;
+    top: 0;
     left: 0;
+    right: 0;
+    height: 64px;
     width: 100%;
-    height: 2px;
-    background: currentColor;
-    border-radius: 2px;
+    padding: 8px 14px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    z-index:1200;
+    background: linear-gradient(180deg, rgba(15,22,32,0.95), rgba(15,22,32,0.85));
   }
-  .menu-toggle .hamburger::before { top: -6px; }
-  .menu-toggle .hamburger::after { top: 6px; }
 
-  /* Menu mobile */
-#sidebar ul {
-  display: none;
-  position: fixed;
-  top: 60px;   /* sotto la topbar */
-  left: 0;
-  right: 0;
-  background: var(--card);
-  padding: 12px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-  z-index: 9999;
-}
+  /* Put content below topbar */
+  #content{
+    margin-left:0 !important;
+    padding: 90px 18px 24px 18px; /* top padding to avoid overlap */
+    max-width:100%;
+  }
 
-#sidebar.open ul {
-  display: block;
-}
+  /* avatar compact left */
+  .avatar-wrapper{ width:56px; height:56px; margin:0; }
+  .avatar-symbol{ width:44px; height:44px; }
 
+  /* hide name & subtitle on topbar */
+  #sidebar h2, #sidebar p { display:none; }
 
-  /* Link nel menu mobile */
+  /* hamburger button (touch size) */
+  .menu-toggle{
+    width:48px;
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    background:transparent;
+    border:0;
+    cursor:pointer;
+    color:var(--text);
+  }
+  .menu-toggle .hamburger { width:22px; height:2px; position:relative; background:currentColor; border-radius:2px; }
+  .menu-toggle .hamburger::before,
+  .menu-toggle .hamburger::after { content:""; position:absolute; left:0; width:100%; height:2px; background:currentColor; border-radius:2px; }
+  .menu-toggle .hamburger::before { top:-7px; }
+  .menu-toggle .hamburger::after { top:7px; }
+
+  /* Drawer: full-width, slide down */
+  #sidebar ul {
+    display:block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 64px;
+    background: linear-gradient(180deg, rgba(15,22,32,0.98), rgba(15,22,32,0.96));
+    padding: 12px 14px;
+    transform: translateY(-18px);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform .28s cubic-bezier(.2,.9,.2,1), opacity .22s;
+    z-index:1150;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+    border-radius: 0 0 12px 12px;
+  }
+
+  #sidebar.open ul {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* each link large and touch-friendly */
   #sidebar ul li a {
-    display: block;
-    padding: 10px;
-    border-radius: 6px;
+    display:block;
+    padding:14px 10px;
+    font-size:15px;
+    border-radius:10px;
   }
-  #sidebar ul li a:hover {
-    background: rgba(239,68,68,0.1);
-    color: var(--accent);
-  }
+
+  /* ensure folder content in reports page is visible and full-width */
+  .folder, .card { max-width: 100%; border-radius:12px; }
+
+  /* smaller headings and spacing for mobile */
+  .stack { gap:18px; margin-top:18px; padding:0 8px; }
+  .card { padding:16px; }
 }
 
 
@@ -1380,13 +1369,38 @@ document.querySelectorAll(".card").forEach(card => {
 });
 </script>
 <script>
-document.getElementById("reportSearch").addEventListener("input", function(){
-  const q = this.value.toLowerCase();
-  document.querySelectorAll("#reports .folder-content li").forEach(li => {
-    li.style.display = li.textContent.toLowerCase().includes(q) ? "" : "none";
+(function(){
+  const input = document.getElementById("reportSearch");
+  if(!input) return;
+  let timer = null;
+  function filter(q){
+    q=q.trim().toLowerCase();
+    const items = Array.from(document.querySelectorAll("#reports .folder-content li"));
+    let any = false;
+    items.forEach(li => {
+      const show = li.textContent.toLowerCase().includes(q);
+      li.style.display = show ? "" : "none";
+      any = any || show;
+    });
+    // show "no results"
+    let no = document.getElementById('noResultsMsg');
+    if(!no){
+      no = document.createElement('div');
+      no.id = 'noResultsMsg';
+      no.style.color = 'var(--muted)';
+      no.style.marginTop = '10px';
+      no.textContent = 'No reports found.';
+      document.querySelector('#reports').appendChild(no);
+    }
+    no.style.display = any ? 'none' : 'block';
+  }
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(()=> filter(input.value), 180);
   });
-});
+})();
 </script>
+
 
 
 
