@@ -202,23 +202,26 @@
   .menu-toggle .hamburger::before { top:-7px; }
   .menu-toggle .hamburger::after { top:7px; }
 
-  /* Drawer: full-width, slide down */
+    /* Drawer compatto sotto la topbar */
   #sidebar ul {
-  display: none;
-  position: absolute;
-  top: 64px; /* subito sotto la topbar */
-  left: 0;
-  right: 0;
-  background: #0f1620; /* colore pieno */
-  padding: 12px 16px;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.45);
-  z-index: 9999;
-}
+    display: none;
+    position: absolute;
+    top: 64px;        /* subito sotto la topbar */
+    left: 12px;
+    right: 12px;
+    background: #0f1620;
+    padding: 12px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    z-index: 9999;
+    max-height: 70vh;        /* NON copre tutto lo schermo */
+    overflow-y: auto;        /* scroll interno se troppi link */
+  }
 
-#sidebar.open ul {
-  display: block;
-}
+  #sidebar.open ul {
+    display: block;
+  }
+
 
 
   /* each link large and touch-friendly */
