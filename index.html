@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0f12">
+  <meta name="theme-color" content="#0f1620">
+
 
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>codenamevenom — Security Portfolio</title>
@@ -147,28 +148,31 @@
 /* ---------- MOBILE: sidebar -> topbar (REFINED, TOUCH-FRIENDLY) ---------- */
 @media (max-width: 880px) {
   /* Topbar */
-  #sidebar{
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 64px;
-    width: 100%;
-    padding: 8px 14px;
-    box-shadow: 0 6px 22px rgba(0,0,0,0.45);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    z-index:1200;
-    background: linear-gradient(180deg, rgba(15,22,32,0.95), rgba(15,22,32,0.85));
-  }
+  #sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  width: 100%;
+  padding: calc(env(safe-area-inset-top, 0px) + 8px) 14px 8px 14px;
+  box-shadow: 0 6px 22px rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 1200;
+  background: #0f1620; /* colore pieno per non risultare trasparente */
+}
+
 
   /* Put content below topbar */
-  #content{
-    margin-left:0 !important;
-    padding: 90px 18px 24px 18px; /* top padding to avoid overlap */
-    max-width:100%;
-  }
+  #content {
+  margin-left: 0 !important;
+  padding: calc(64px + env(safe-area-inset-top, 0px) + 16px) 16px 24px 16px;
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
 
   /* avatar compact left */
   .avatar-wrapper{ width:56px; height:56px; margin:0; }
